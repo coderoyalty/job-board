@@ -1,19 +1,22 @@
-import React, { useState } from "react";
-import { Button, ChakraProvider, Text } from "@chakra-ui/react";
+import React from "react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ReactQuillWrapper from "./components/ReactQuillWrapper";
 import Layout from "./Layout";
 import Editor from "./components/Editor";
+import JobPage from "./pages/JobPage";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="editor" element={<Editor />} />
-        </Route>
-      </Routes>
-    </Router>
+    <ChakraProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path="editor" element={<Editor />} />
+            <Route path="job-offer" element={<JobPage />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ChakraProvider>
   );
 }
 
