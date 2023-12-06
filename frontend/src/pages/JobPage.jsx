@@ -5,7 +5,7 @@ const JobPage = () => {
   return (
     <>
       <>
-        <section className="bg-inherit mt-4 relative flex gap-3 justify-center max-sm:flex-col max-sm:items-center w-full">
+        <section className="bg-inherit mt-4 relative flex gap-3 justify-center max-md:flex-col max-md:items-center w-full">
           {/* side-menu with filter forms */}
           <JobFilterForm />
           <div className="flex flex-col gap-3">

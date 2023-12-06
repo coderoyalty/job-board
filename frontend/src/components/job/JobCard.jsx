@@ -1,6 +1,6 @@
 const data = {
   jobTitle: "Office Administrator",
-  created: "",
+  created: new Date(),
   salary: "70,000.00",
   location: "Ojodu, Berger",
   summary: `Life Edge Nigeria is hiring for the role of Office
@@ -8,26 +8,70 @@ const data = {
                 creative person with previous clerical or administrative
                 experience who lives in...`,
   company: "LIFE EDGE NIGERIA LTD",
+  work_mode: "remote",
+  applicants: 400,
+  deadline: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 };
 
+import { Badge, Stack, StackItem } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+
+/**
+ *
+ * @param {Date} start
+ * @param {Date} end
+ */
+function findTimeLeft(start, end) {
+  const diff = Math.abs(end - start);
+  const inMinutes = 1000 * 60;
+  const inHours = inMinutes * 60;
+  const inDays = inHours * 24;
+  const inWeeks = inDays * 7;
+  const inMonths = inWeeks * 4;
+  let value = "";
+  if (diff < inHours) {
+    const time = Math.floor(diff / inMinutes);
+    if (time == 1) value = `A minute`;
+    else value = `${time} minutes`;
+  } else if (diff < inDays) {
+    const time = Math.floor(diff / inHours);
+    if (time == 1) value = `An hour`;
+    else value = `${time} hours`;
+  } else if (diff < inWeeks) {
+    const time = Math.floor(diff / inDays);
+    if (time == 1) value = `A day`;
+    else value = `${time} days`;
+  } else if (diff < inMonths) {
+    const time = Math.floor(diff / inWeeks);
+    if (time == 1) value = `A week`;
+    else value = `${time} weeks`;
+  } else {
+    const time = Math.floor(diff / inMonths);
+    if (time == 1) value = `A month`;
+    else value = `${time} months`;
+  }
+
+  return `${value} to go`;
+}
 
 const JobCard = () => {
   return (
     <>
-      <div className="transition-all mx-3 w-[388px] sm:w-[424px] sm:mx-0 md:w-[488px] lg:w-[600px] bg-[#E2C799] shadow-md rounded-lg overflow-hidden">
+      <div className="transition-all mx-2 w-[324px] sm:w-[424px] md:max-w-[482px] bg-[#E2C799] shadow-md rounded overflow-hidden">
         <Link>
-          <div className="flex gap-1 flex-col p-2 md:p-4">
-            {/*  */}
+          <Stack direction={"column"} spacing={1} className="p-2 md:p-4">
+            {/* Job Info */}
             <div className="flex justify-between">
               <div className="font-bold">{data.jobTitle}</div>
-              <div className="flex">
-                <div className="animate-bounce rounded-md text-slate-900 py-1 px-3 bg-[rgba(13,109,253,0.77)]">
-                  14/12/2023
-                </div>
+              <div>
+                <Badge colorScheme="whatsapp">
+                  <span className="text-base">
+                    {data.created.toLocaleDateString()}
+                  </span>
+                </Badge>
               </div>
             </div>
-            {/*  */}
+            {/* Salary */}
             <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,6 +86,7 @@ const JobCard = () => {
               </svg>
               <b>Salary</b> {data.salary} NGN Monthly
             </div>
+            {/* Location */}
             <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -56,6 +101,7 @@ const JobCard = () => {
               </svg>
               {data.location}
             </div>
+            {/* Company */}
             <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -73,8 +119,27 @@ const JobCard = () => {
               </svg>
               {data.company}
             </div>
-            <p className="text text-slate-600">{data.summary}</p>
-          </div>
+            {/* Info */}
+            <Stack direction={"row"}>
+              <StackItem>
+                <Badge colorScheme="whatsapp">
+                  <span className="text-sm">{data.work_mode}</span>
+                </Badge>
+              </StackItem>
+              <StackItem>
+                <Badge className="telegram">
+                  <span className="text-sm">{data.applicants} applicants</span>
+                </Badge>
+              </StackItem>
+              <StackItem>
+                <Badge className="twitter animate-bounce">
+                  <span className="text-sm">
+                    {findTimeLeft(data.created, data.deadline)}
+                  </span>
+                </Badge>
+              </StackItem>
+            </Stack>
+          </Stack>
         </Link>
       </div>
     </>
