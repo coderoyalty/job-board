@@ -3,104 +3,95 @@ import {
   Stack,
   HStack,
   Heading,
-  Text,
   Button,
-  Checkbox,
-  Divider,
-  Link,
   Box,
   FormControl,
   FormLabel,
+  FormHelperText,
   Input,
   Textarea,
-  Radio,
-  RadioGroup,
+  IconButton,
 } from "@chakra-ui/react";
+import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import React from "react";
-import { useFormik } from "formik";
+import UserRegistrationContext from "../contexts/UserRegistrationContext";
+import UserRegistrationForm from "../components/form/UserRegistrationForm";
 
-function delay(ms) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(`Delay of ${ms} milliseconds completed`);
-    }, ms);
-  });
-}
+const AdditionalInformationForm = () => {
+  const [showAdditionalFields, setShow] = React.useState(false);
+  const FormField1 = () => {
+    return (
+      <>
+        <FormControl isRequired>
+          <FormLabel>Contact Name</FormLabel>
+          <Input type="text" name="contactName" id="contactName" />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel htmlFor="companyName">Company Name</FormLabel>
+          <Input type="text" name="companyName" id="companyName" />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel htmlFor="companyWebsite">Company Website</FormLabel>
+          <Input type="url" name="companyWebsite" id="companyWebsite" />
+          <FormHelperText>
+            Use the company LinkedIn URL if there's no website.
+          </FormHelperText>
+        </FormControl>
+      </>
+    );
+  };
 
-const BaseLoginForm = () => {
-  const context = React.useContext(Context);
-  const [loading, setLoading] = React.useState(false);
-
-  const formik = useFormik({
-    initialValues: { contactName: "", companyName: "", companyLocation: "" },
-    onSubmit: (values) => {
-      setLoading(true);
-
-      delay(1000).then(() => {
-        alert(JSON.stringify(values, null, 4));
-        context.setStep(1);
-        setLoading(false);
-      });
-    },
-  });
-
-  return (
-    <Stack direction="column" spacing={8} className="p-4">
-      <Heading textAlign="center">Create An Account</Heading>
-      <Box as="form" onSubmit={formik.handleSubmit}>
-        <Stack direction={"column"} spacing={6}>
-          <FormControl isRequired>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="text"
-              name="email"
-              id="email"
-              onChange={formik.handleChange}
-              value={formik.values.email}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel htmlFor="password">Password</FormLabel>
-            <Input
-              type="password"
-              name="password"
-              id="password"
-              onChange={formik.handleChange}
-              value={formik.values.password}
-            />
-          </FormControl>
-          <Button colorScheme="whatsapp" type="submit" isLoading={loading}>
-            Create Account
-          </Button>
-        </Stack>
-      </Box>
-    </Stack>
-  );
-};
-
-const EmployerDetailForm = () => {
+  const FormField2 = () => {
+    return (
+      <>
+        <FormControl isRequired>
+          <FormLabel htmlFor="companyName">Company Location</FormLabel>
+          <Input type="text" name="companyLocation" id="companyLocation" />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="companyDesc">Company Description</FormLabel>
+          <Textarea name="companyDesc" id="companyDesc" />
+        </FormControl>
+      </>
+    );
+  };
   return (
     <Stack direction="column" spacing={6} className="p-4">
-      <Heading textAlign="center">Your Information</Heading>
+      <Heading textAlign="center">Additional Information</Heading>
       <Box as="form">
         <Stack direction={"column"} spacing={4}>
-          <FormControl isRequired>
-            <FormLabel>Contact Name</FormLabel>
-            <Input type="text" name="contactName" id="contactName" />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel htmlFor="companyName">Company Name</FormLabel>
-            <Input type="text" name="companyName" id="companyName" />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel htmlFor="companyName">Company Location</FormLabel>
-            <Input type="text" name="companyLocation" id="companyLocation" />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="companyLocation">Company Description</FormLabel>
-            <Textarea name="companyLocation" id="companyLocation" />
-          </FormControl>
-          <Button colorScheme="twitter" type="submit">
+          {!showAdditionalFields ? <FormField1 /> : <FormField2 />}
+
+          {/* <ButtonGroup> */}
+          <HStack>
+            <IconButton
+              isDisabled={!showAdditionalFields}
+              icon={<ArrowLeftIcon />}
+              id="leftNavBtn"
+              w={"50%"}
+              variant={"outline"}
+              colorScheme="telegram"
+              onClick={() => {
+                setShow(false);
+              }}
+            />
+            <IconButton
+              isDisabled={showAdditionalFields}
+              icon={<ArrowRightIcon />}
+              id="rightNavBtn"
+              w={"50%"}
+              variant={"outline"}
+              colorScheme="telegram"
+              onClick={() => {
+                setShow(true);
+              }}
+            />
+          </HStack>
+          <Button
+            colorScheme="twitter"
+            type="submit"
+            isDisabled={!showAdditionalFields}
+          >
             Submit
           </Button>
         </Stack>
@@ -109,17 +100,8 @@ const EmployerDetailForm = () => {
   );
 };
 
-const Context = React.createContext({
-  step: 0,
-  /**
-   *
-   * @param {React.SetStateAction<number>} value
-   */
-  setStep: (value) => {},
-});
-
 const EmployerSignup = () => {
-  const [step, setStep] = React.useState(1);
+  const [isSecondStep, setRegistrationStep] = React.useState(0);
 
   return (
     <Box
@@ -130,9 +112,15 @@ const EmployerSignup = () => {
         maxW="sm"
         className="text-white bg-[#292e23] rounded-lg shadow-md px-4 py-8"
       >
-        <Context.Provider value={{ step, setStep }}>
-          {step === 0 ? <BaseLoginForm /> : <EmployerDetailForm />}
-        </Context.Provider>
+        <UserRegistrationContext.Provider
+          value={{ isSecondStep, setRegistrationStep }}
+        >
+          {isSecondStep === 0 ? (
+            <UserRegistrationForm />
+          ) : (
+            <AdditionalInformationForm />
+          )}
+        </UserRegistrationContext.Provider>
       </Container>
     </Box>
   );
