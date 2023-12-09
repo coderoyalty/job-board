@@ -37,7 +37,7 @@ const UserRegistrationForm = () => {
   });
 
   return (
-    <Stack direction="column" spacing={8} className="p-4">
+    <Stack direction="column" spacing={6} className="p-4">
       <Heading textAlign="center">Create An Account</Heading>
       <Box as="form" onSubmit={formik.handleSubmit}>
         <Stack direction={"column"} spacing={6}>

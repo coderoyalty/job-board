@@ -5,6 +5,7 @@ import Editor from "./components/Editor";
 import JobPage from "./pages/JobPage";
 import HomePage from "./pages/Home";
 import EmployerSignup from "./pages/EmployerSignup";
+import CandidateSignup from "./pages/CandidateSignup";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="job-offer" element={<JobPage />} />
           </Route>
           <Route path="employer-signup" element={<EmployerSignup />} />
+          <Route path="candidate-signup" element={<CandidateSignup />} />
         </Routes>
       </Router>
     </ChakraProvider>
