@@ -9,7 +9,6 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import UserRegistrationContext from "../../contexts/UserRegistrationContext";
 
 function delay(ms) {
   return new Promise((resolve) => {
@@ -19,8 +18,7 @@ function delay(ms) {
   });
 }
 
-const UserRegistrationForm = () => {
-  const context = React.useContext(UserRegistrationContext);
+const EmployerRegistrationForm = ({ setRegistrationProgress }) => {
   const [loading, setLoading] = React.useState(false);
 
   const formik = useFormik({
@@ -30,7 +28,7 @@ const UserRegistrationForm = () => {
 
       delay(1000).then(() => {
         alert(JSON.stringify(values, null, 4));
-        context.setRegistrationStep(1);
+        setRegistrationProgress(true);
         setLoading(false);
       });
     },
@@ -70,4 +68,4 @@ const UserRegistrationForm = () => {
   );
 };
 
-export default UserRegistrationForm;
+export default EmployerRegistrationForm;

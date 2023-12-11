@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Container } from "@chakra-ui/react";
-import UserRegistrationForm from "../components/form/UserRegistrationForm";
-import UserRegistrationContext from "../contexts/UserRegistrationContext";
+import CandidateRegistrationForm from "../components/form/CandidateRegistrationForm";
+import CandidateInformationForm from "../components/form/CandidateInformationForm";
 
 const CandidateSignup = () => {
-  const [isSecondStep, setRegistrationStep] = React.useState(0);
+  const [progress, setRegistrationProgress] = React.useState(false);
 
   return (
     <Box
@@ -15,11 +15,13 @@ const CandidateSignup = () => {
         maxW="sm"
         className="text-white bg-[#292e23] rounded-lg shadow-md px-4 py-8"
       >
-        <UserRegistrationContext.Provider
-          value={{ isSecondStep, setRegistrationStep }}
-        >
-          <UserRegistrationForm />
-        </UserRegistrationContext.Provider>
+        {progress !== true ? (
+          <CandidateRegistrationForm
+            setRegistrationProgress={setRegistrationProgress}
+          />
+        ) : (
+          <CandidateInformationForm />
+        )}
       </Container>
     </Box>
   );
