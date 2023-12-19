@@ -40,7 +40,7 @@ const HeroSection = () => {
             </Button>
             <Button
               colorScheme="twitter"
-              onClick={() => navigate("/employer-signup")}
+              onClick={() => navigate("/candidate-signup")}
             >
               Apply For Jobs
             </Button>
