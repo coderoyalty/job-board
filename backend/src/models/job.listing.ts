@@ -8,6 +8,8 @@ interface IJobListing {
 	deadline: Date;
 	employer: mongoose.Types.ObjectId;
 	application: Array<mongoose.Types.ObjectId>;
+	salary: number;
+	company: string;
 }
 
 const defaultDuration = () => Date.now() + 1000 * 60 * 60 * 24 * 7; // a week
@@ -19,6 +21,14 @@ const jobListingDefinition = {
 	deadline: {
 		type: Date,
 		default: new Date(defaultDuration()),
+	},
+	salary: {
+		type: Number,
+		required: false,
+	},
+	company: {
+		type: String,
+		required: true,
 	},
 	employer: { type: mongoose.Schema.Types.ObjectId, ref: "Employer" },
 	applications: [
