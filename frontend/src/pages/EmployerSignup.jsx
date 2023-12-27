@@ -1,11 +1,9 @@
 import { Container, Box } from "@chakra-ui/react";
 import React from "react";
-import EmployerRegistrationForm from "../components/form/EmployerRegistrationForm";
-import EmployerInformationForm from "../components/form/EmployerInformationForm";
+import RegistrationForm from "../components/form/RegistrationForm";
 
 const EmployerSignup = () => {
-  const [progress, setRegistrationProgress] = React.useState(false);
-
+  const role = "employer";
   return (
     <Box
       as="section"
@@ -15,13 +13,7 @@ const EmployerSignup = () => {
         maxW="sm"
         className="text-white bg-[#292e23] rounded-lg shadow-md px-4 py-8"
       >
-        {progress !== true ? (
-          <EmployerRegistrationForm
-            setRegistrationProgress={setRegistrationProgress}
-          />
-        ) : (
-          <EmployerInformationForm />
-        )}
+        <RegistrationForm role={role} />
       </Container>
     </Box>
   );

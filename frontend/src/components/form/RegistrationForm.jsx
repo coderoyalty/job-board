@@ -7,30 +7,63 @@ import {
   FormControl,
   FormLabel,
   Input,
+  useToast,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 
-function delay(ms) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(`Delay of ${ms} milliseconds completed`);
-    }, ms);
-  });
-}
-
-const EmployerRegistrationForm = ({ setRegistrationProgress }) => {
+const RegistrationForm = ({ role }) => {
   const [loading, setLoading] = React.useState(false);
 
+  const toast = useToast();
+
   const formik = useFormik({
-    initialValues: { contactName: "", companyName: "", companyLocation: "" },
+    initialValues: { email: "", password: "" },
     onSubmit: (values) => {
       setLoading(true);
 
-      delay(1000).then(() => {
-        alert(JSON.stringify(values, null, 4));
-        setRegistrationProgress(true);
-        setLoading(false);
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+
+      const body = {
+        ...values,
+        role,
+      };
+
+      fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: headersList,
+        body: JSON.stringify(body),
+      }).then((response) => {
+        console.log(response.status, response.statusText);
+        if (!response.ok) {
+          formik.values = { email: "", password: "" };
+
+          toast({
+            title: "Account Creation Failed",
+            description: "We couldn't create an account for you.",
+            status: "error",
+            isClosable: true,
+            duration: 3000,
+            onCloseComplete: () => {},
+          });
+        } else {
+          toast({
+            title: "Account Created",
+            description: "We've created an account for you.",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+            onCloseComplete: () => {},
+          });
+        }
+
+        formik.setValues({ email: "", password: "" });
       });
+
+      setLoading(false);
     },
   });
 
@@ -68,4 +101,4 @@ const EmployerRegistrationForm = ({ setRegistrationProgress }) => {
   );
 };
 
-export default EmployerRegistrationForm;
+export default RegistrationForm;
