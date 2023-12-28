@@ -2,7 +2,6 @@ import express from "express";
 import Controller from "@/utils/controller.decorator";
 import BaseController from "./base.controller";
 import { Get, Post } from "@/utils/route.decorator";
-import UserService from "@/services/user";
 import {
 	isAlreadyLoggedIn,
 	isLoggedIn,
@@ -23,7 +22,7 @@ export class AuthController extends BaseController {
 	async create(req: express.Request, res: express.Response) {
 		const body = req.body;
 
-		const user = await UserService.createUser(body);
+		const user = await AuthService.createUser(body);
 
 		res.status(StatusCodes.CREATED).json({
 			data: user,
