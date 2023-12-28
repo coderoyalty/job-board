@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 enum Role {
 	CANDIDATE = "candidate",
@@ -11,11 +12,14 @@ interface IUser extends Document {
 	email: string;
 	password: string;
 	role: Role;
+
+	isValidPassword(password: string): Promise<boolean>;
+	createJWT(): string;
 }
 
 interface IUserModel extends Model<IUser> {
-	// You can add static methods here if needed
-	isValidPassword: (password: string) => Promise<boolean>;
+	isValidPassword(password: string): Promise<boolean>; // Extend Model interface
+	createJWT(): string;
 }
 
 const userDefinition = {
@@ -56,6 +60,20 @@ userSchema.methods.isValidPassword = async function (
 	password: string,
 ): Promise<boolean> {
 	return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.createJWT = function () {
+	return jwt.sign(
+		{
+			id: this._id,
+			email: this.email,
+			role: this.role,
+		},
+		"",
+		{
+			expiresIn: process.env.JWT_DURATION || "1h",
+		},
+	);
 };
 
 // replace _id with id
