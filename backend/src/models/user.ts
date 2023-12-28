@@ -69,7 +69,7 @@ userSchema.methods.createJWT = function () {
 			email: this.email,
 			role: this.role,
 		},
-		"",
+		process.env.JWT_SECRETKEY || "jwtsecret",
 		{
 			expiresIn: process.env.JWT_DURATION || "1h",
 		},

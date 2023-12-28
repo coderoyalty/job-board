@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import BaseController from "./controllers/base.controller";
 import errorMiddleWare from "./middlewares/error.middleware";
 
@@ -40,6 +41,7 @@ export default class App {
 				origin: "*",
 			}),
 		);
+		this.app.use(cookieParser(process.env.JWT_COOKIE_SECRET));
 		this.app.use(morgan("dev"));
 		this.app.use(express.json());
 		this.app.use(
