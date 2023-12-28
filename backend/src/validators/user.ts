@@ -9,6 +9,7 @@ const UserValidator = z.object({
 });
 
 const CreateUserValidator = UserValidator.omit({ id: true });
+const LoginValidator = UserValidator.omit({ id: true, role: true });
 
 export default UserValidator;
-export { CreateUserValidator };
+export { CreateUserValidator, LoginValidator };
