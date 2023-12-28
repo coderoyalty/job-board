@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import Controller from "@/utils/controller.decorator";
 import BaseController from "./base.controller";
 import { Get, Post } from "@/utils/route.decorator";
+import mongoose from "mongoose";
+import { BadRequestError, CustomAPIError } from "@/errors";
+import UserService from "@/services/user";
+import { StatusCodes } from "http-status-codes";
 
 @Controller()
 export class UserController extends BaseController {
@@ -10,33 +14,16 @@ export class UserController extends BaseController {
 	}
 
 	@Get("/:id")
-	async read(req: Request, res: Response) {
+	async get(req: Request, res: Response) {
 		const { id } = req.params;
-		try {
-			const response = await fetch(
-				`https://jsonplaceholder.typicode.com/users/${id}`,
-			);
-			const data = await response.json();
-			return res.send(data);
-		} catch (err) {
-			res.sendStatus(500);
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
 		}
-	}
 
-	@Post("/:id/posts")
-	async create(req: Request, res: Response) {
-		const { id } = req.params;
-		const data = req.body;
-		const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
-			method: "POST",
-			body: JSON.stringify({
-				...data,
-				userId: id,
-			}),
-			headers: {
-				"Content-type": "application/json; charset=UTF-8",
-			},
+		const data = await UserService.getUserAndRole(id);
+
+		return res.status(StatusCodes.OK).json({
+			...data,
 		});
-		res.status(201).json(await response.json());
 	}
 }
