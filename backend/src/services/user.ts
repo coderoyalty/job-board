@@ -29,7 +29,7 @@ class UserService {
 			});
 		}
 
-		return { user, data: roleValue };
+		return { user, [user.role]: roleValue };
 	}
 
 	static async createUserRole(
@@ -55,7 +55,7 @@ class UserService {
 
 		return {
 			user,
-			roleData,
+			[user.role]: roleData,
 		};
 	}
 }
