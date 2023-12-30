@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import config from "@/utils/config";
 
 enum Role {
 	CANDIDATE = "candidate",
@@ -69,9 +70,9 @@ userSchema.methods.createJWT = function () {
 			email: this.email,
 			role: this.role,
 		},
-		process.env.JWT_SECRETKEY || "jwtsecret",
+		config.jwt.SECRET,
 		{
-			expiresIn: process.env.JWT_DURATION || "1h",
+			expiresIn: config.jwt.DURATION,
 		},
 	);
 };

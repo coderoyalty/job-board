@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import BaseController from "./controllers/base.controller";
 import errorMiddleWare from "./middlewares/error.middleware";
+import config from "./utils/config";
 
 export default class App {
 	private static instance: App | null = null;
@@ -15,7 +16,7 @@ export default class App {
 	constructor() {
 		this.app = express();
 		this.initMiddleware();
-		this.port = (process.env.PORT || 5000) as number;
+		this.port = config.PORT;
 	}
 
 	injectController(controller: BaseController) {
@@ -41,7 +42,7 @@ export default class App {
 				origin: "*",
 			}),
 		);
-		this.app.use(cookieParser(process.env.JWT_COOKIE_SECRET));
+		this.app.use(cookieParser(config.COOKIE_SECRET));
 		this.app.use(morgan("dev"));
 		this.app.use(express.json());
 		this.app.use(

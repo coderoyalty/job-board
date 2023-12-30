@@ -1,10 +1,11 @@
 import mongoose, { Connection } from "mongoose";
+import config from "./config";
 
-const connectDB = async (dbName?: string): Promise<Connection> => {
+const connectDB = async (): Promise<Connection> => {
 	try {
-		const url = `mongodb://localhost:27017/${dbName || "your-database-name"}`;
+		const url = config.db.URI;
 		const connection = await mongoose.connect(url, {
-			appName: "CodsoftJobBoard",
+			appName: config.db.NAME,
 		});
 		console.log("✅ - Database connection was successful");
 		return connection.connection;
