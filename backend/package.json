@@ -5,9 +5,10 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start:build": "tsc -w",
-		"start:run": "node --watch-path=./dist ./dist/index.js",
-		"start": "concurrently npm:start:*"
+		"dev:build": "tsc -w",
+		"dev:run": "node --watch-path=./dist ./dist/index.js",
+		"dev": "concurrently npm:dev:*",
+		"prod": "tsc -b && node ./dist/index.js"
 	},
 	"keywords": [
 		"template",
