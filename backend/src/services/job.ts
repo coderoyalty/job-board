@@ -1,11 +1,19 @@
-import { BadRequestError, NotFoundError } from "@/errors";
+import { BadRequestError, CustomAPIError, NotFoundError } from "@/errors";
 import JobListing from "@/models/job.listing";
+import { JobValidator } from "@/validators/job";
 import mongoose from "mongoose";
+import { z } from "zod";
 
 class JobService {
-	static async create() {}
+	static async create(data: z.infer<typeof JobValidator>) {
+		const job = await JobListing.create({ ...data });
 
-	static async remove() {}
+		if (!job) {
+			throw new CustomAPIError("Couldn't create a job", 500);
+		}
+
+		return job;
+	}
 
 	static async find(id: string) {
 		if (!mongoose.isValidObjectId(id)) {
@@ -21,21 +29,21 @@ class JobService {
 		return job;
 	}
 
-	static async update() {}
-
 	static async findAll(
 		query: Record<string, string>,
-		page: number = 1,
-		limit: number = 20,
+		page: number,
+		limit: number,
+		ascending: any,
 	) {
 		const skip = (page - 1) * limit;
 		const jobListingsWithCount = await JobListing.aggregate([
-			{ $match: query },
+			{ $match: { ...query } },
+			{ $sort: { createdAt: ascending } },
 			{ $skip: skip },
 			{ $limit: limit },
 			{
 				$addFields: {
-					applicationsCount: { $size: "$applications" },
+					applications: { $size: "$applications" },
 				},
 			},
 		]).exec();
@@ -50,6 +58,7 @@ class JobService {
 			data: jobListingsWithCount,
 			total: totalDocs,
 			pages: totalPages,
+			count: jobListingsWithCount.length,
 			prev: null,
 			next: null,
 		};
@@ -63,6 +72,10 @@ class JobService {
 
 		return data;
 	}
+
+	static async update() {}
+
+	static async remove() {}
 }
 
 export default JobService;
