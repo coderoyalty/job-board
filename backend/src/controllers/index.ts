@@ -1,6 +1,7 @@
 import "@/controllers/base.controller";
 import "@/controllers/user";
 import "@/controllers/auth.controller";
+import "@/controllers/job.controller";
 
 // It's important to import every other controller file here!
 
