@@ -1,6 +1,7 @@
 import { BadRequestError, CustomAPIError, NotFoundError } from "@/errors";
 import JobListing from "@/models/job.listing";
 import { JobValidator } from "@/validators/job";
+import { application } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
 
@@ -33,17 +34,17 @@ class JobService {
 		query: Record<string, string>,
 		page: number,
 		limit: number,
-		ascending: any,
+		latest = false,
 	) {
 		const skip = (page - 1) * limit;
 		const jobListingsWithCount = await JobListing.aggregate([
 			{ $match: { ...query } },
-			{ $sort: { createdAt: ascending } },
+			{ $sort: { createdAt: latest ? -1 : 1 } },
 			{ $skip: skip },
 			{ $limit: limit },
 			{
 				$addFields: {
-					applications: { $size: "$applications" },
+					applicants: { $size: "$applications" },
 				},
 			},
 		]).exec();

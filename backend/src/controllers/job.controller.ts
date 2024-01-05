@@ -30,18 +30,7 @@ export class JobController extends BaseController {
 
 	@Get("/")
 	async getJobs(req: Request, res: Response) {
-		const {
-			page = "1",
-			limit = "10",
-			order = "asc",
-			location,
-			title,
-		} = req.query;
-
-		let asc = 1;
-		if (order === "desc") {
-			asc = -1;
-		}
+		const { page = "1", limit = "10", location, title, latest } = req.query;
 
 		const query: Record<string, any> = {};
 
@@ -52,12 +41,14 @@ export class JobController extends BaseController {
 			query.title = new RegExp(title as string, "i");
 		}
 
-		const jobs = await JobService.findAll(
-			query,
-			Number(page),
-			Number(limit),
-			asc,
-		);
+		let jobs;
+
+		if (latest !== undefined) {
+			jobs = await JobService.findAll(query, Number(page), Number(limit), true);
+		} else {
+			jobs = await JobService.findAll(query, Number(page), Number(limit));
+		}
+
 		return res.json({
 			...jobs,
 		});
