@@ -109,9 +109,11 @@ const JobPage = () => {
           <JobFilterForm />
           <div className="flex flex-col gap-3">
             {isLoading ? (
-              <Spinner mt={4} color="blue.500" size={"xl"} />
+              <div className="w-[324px] sm:w-[424px] md:max-w-[482px] flex justify-center items-center">
+                <Spinner mt={4} color="blue.500" size={"xl"} />
+              </div>
             ) : (
-              jobs.map((job) => <JobCard data={job} key={job._id} />)
+              jobs.map((job) => <JobCard data={job} key={job.id} />)
             )}
           </div>
           <div>
