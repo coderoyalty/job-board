@@ -18,7 +18,6 @@ const validateRegistrationData = async (
 	const output = CreateUserValidator.safeParse(data);
 
 	if (output.success === false) {
-		console.error(output.error);
 		next(new BadRequestError("please provide all data correctly."));
 	}
 
