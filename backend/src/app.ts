@@ -5,16 +5,25 @@ import cookieParser from "cookie-parser";
 import BaseController from "./controllers/base.controller";
 import errorMiddleWare from "./middlewares/error.middleware";
 import config from "./utils/config";
+import { customLog } from "./utils/custom.log";
 
 export default class App {
 	private static instance: App | null = null;
-	private app: Express;
+	private _app: Express;
 	private port: number;
+
+	public get app() {
+		return this._app;
+	}
+
+	private set app(v: Express) {
+		this._app = v;
+	}
 
 	static endpoints: string[] = [];
 
 	constructor() {
-		this.app = express();
+		this._app = express();
 		this.initMiddleware();
 		this.port = config.PORT;
 	}
@@ -54,7 +63,7 @@ export default class App {
 
 	static getInstance() {
 		if (!this.instance) {
-			console.log(`Application: ✅ created`);
+			customLog(`Application: ✅ created`);
 			this.instance = new App();
 		}
 		return this.instance;
@@ -69,12 +78,12 @@ export default class App {
 
 		const server = this.app.listen(this.port, () => {
 			const time = new Date().toISOString();
-			console.log(
+			customLog(
 				`[⚡] server started: ${time} => http://localhost:${this.port}/`,
 			);
-			console.log("Registered endpoints:");
+			customLog("Registered endpoints:");
 			for (let endpoint of App.endpoints) {
-				console.log("\t" + endpoint);
+				customLog("\t" + endpoint);
 			}
 		});
 
