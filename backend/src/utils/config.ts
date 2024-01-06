@@ -12,6 +12,7 @@ const config = {
 		NAME: process.env.DB_NAME || "coderoyalty",
 	},
 	PORT: (process.env.PORT || 5000) as number,
+	enableLogging: process.env.ENV === "dev" ? true : false,
 };
 
 export default config;
