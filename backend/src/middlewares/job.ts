@@ -21,10 +21,8 @@ const validateJobData = async (
 
 	const output = JobValidator.safeParse(req.body);
 	if (!output.success) {
-		console.log(output.error.errors);
 		next(new BadRequestError("please provide correct information"));
 	}
-
 	next(null);
 };
 
