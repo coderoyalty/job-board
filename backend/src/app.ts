@@ -7,13 +7,21 @@ import errorMiddleWare from "./middlewares/error.middleware";
 
 export default class App {
 	private static instance: App | null = null;
-	private app: Express;
+	private _app: Express;
 	private port: number;
+
+	public get app() {
+		return this._app;
+	}
+
+	private set app(v: Express) {
+		this._app = v;
+	}
 
 	static endpoints: string[] = [];
 
 	constructor() {
-		this.app = express();
+		this._app = express();
 		this.initMiddleware();
 		this.port = (process.env.PORT || 5000) as number;
 	}
