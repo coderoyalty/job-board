@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Box, Text } from "@chakra-ui/react";
+import "./appreciation.css";
 
 const Appreciation = ({ text, name }) => {
   return (
@@ -10,14 +11,10 @@ const Appreciation = ({ text, name }) => {
       boxShadow="lg"
       p={4}
       m={4}
-      className="bg-slate-900 text-sky-200"
+      className="appreciation__preview bg-slate-900 text-sky-200"
     >
-      <Text>
-        {text}
-        <span className="block text-right text-base font-semibold">
-          {name}.
-        </span>
-      </Text>
+      <Text className="text">{text}</Text>
+      <span className="block text-right text-base font-semibold">{name}.</span>
     </Box>
   );
 };

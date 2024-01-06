@@ -48,6 +48,6 @@ jobListingSchema.set("toJSON", {
 	},
 });
 
-const JobListing = mongoose.model<IJobListing>("JobListing");
+const JobListing = mongoose.model<IJobListing>("JobListing", jobListingSchema);
 
 export default JobListing;

@@ -10,47 +10,57 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { fetchData } from "../../api";
 
-const RegistrationForm = ({ role }) => {
+const LoginForm = () => {
   const [loading, setLoading] = React.useState(false);
 
   const toast = useToast();
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       setLoading(true);
+
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
 
       const body = {
         ...values,
-        role,
       };
 
-      const response = await fetchData("/auth/register", "POST", body);
+      fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: headersList,
+        body: JSON.stringify(body),
+      }).then((response) => {
+        console.log(response.status, response.statusText);
+        if (!response.ok) {
+          formik.values = { email: "", password: "" };
 
-      if (!response.ok) {
-        formik.values = { email: "", password: "" };
+          toast({
+            title: "Account Creation Failed",
+            description: "We couldn't create an account for you.",
+            status: "error",
+            isClosable: true,
+            duration: 3000,
+            onCloseComplete: () => {},
+          });
+        } else {
+          toast({
+            title: "Account Created",
+            description: "We've created an account for you.",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+            onCloseComplete: () => {},
+          });
+        }
 
-        toast({
-          title: "Account Creation Failed",
-          description: response.data.message,
-          status: "error",
-          isClosable: true,
-          duration: 3000,
-          onCloseComplete: () => {},
-          id: "signupFormToast",
-        });
-      } else {
-        toast({
-          title: "Account Created",
-          description: "We've created an account for you.",
-          status: "success",
-          isClosable: true,
-          duration: 3000,
-          onCloseComplete: () => {},
-        });
-      }
+        formik.setValues({ email: "", password: "" });
+      });
 
       setLoading(false);
     },
@@ -82,7 +92,7 @@ const RegistrationForm = ({ role }) => {
             />
           </FormControl>
           <Button colorScheme="whatsapp" type="submit" isLoading={loading}>
-            Create Account
+            Login
           </Button>
         </Stack>
       </Box>
@@ -90,4 +100,4 @@ const RegistrationForm = ({ role }) => {
   );
 };
 
-export default RegistrationForm;
+export default LoginForm;

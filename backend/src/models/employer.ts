@@ -42,6 +42,16 @@ const employerSchema = new mongoose.Schema<IEmployer>(
 	{ timestamps: true },
 );
 
+// replace _id with id
+employerSchema.set("toJSON", {
+	transform: function (doc, ret) {
+		ret.id = ret._id;
+		delete ret._id;
+		delete ret.password;
+		delete ret.__v;
+	},
+});
+
 const Employer = mongoose.model<IEmployer>("Employer", employerSchema);
 export { employerSchema };
 export default Employer;

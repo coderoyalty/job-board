@@ -11,7 +11,7 @@ import "react-quill/dist/quill.snow.css";
 const ReactQuillWrapper = ({ text, setText }) => {
   const modules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
+      [{ header: [1, 2, 3, false] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
       [
         { list: "ordered" },
@@ -19,7 +19,7 @@ const ReactQuillWrapper = ({ text, setText }) => {
         { indent: "-1" },
         { indent: "+1" },
       ],
-      ["link", "image"],
+      ["link"],
       ["clean"],
     ],
   };
@@ -43,9 +43,9 @@ const ReactQuillWrapper = ({ text, setText }) => {
   };
 
   return (
-    <div className="mx-auto w-[80%] max-w-2xl">
+    <div className="mx-auto w-[80%] max-w-2xl bg-slate-400 h-[498px] p-4 rounded-md">
       <ReactQuill
-        className="h-[412px]"
+        className="h-[400px]"
         value={text}
         modules={modules}
         formats={formats}

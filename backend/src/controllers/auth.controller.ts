@@ -1,33 +1,16 @@
 import express from "express";
 import Controller from "@/utils/controller.decorator";
 import BaseController from "./base.controller";
-import { Post } from "@/utils/route.decorator";
-import UserService from "@/services/user";
+import { Get, Post } from "@/utils/route.decorator";
 import {
+	isAlreadyLoggedIn,
+	isLoggedIn,
 	validateLoginData,
 	validateRegistrationData,
 } from "@/middlewares/auth";
 import { StatusCodes } from "http-status-codes";
 import AuthService from "@/services/auth";
-import { verifyToken } from "@/utils/jwt";
-
-/**
- * this middleware restricts multiple login
- */
-const isAlreadyLoggedIn = (
-	req: express.Request,
-	res: express.Response,
-	next: express.NextFunction,
-) => {
-	// proceed to the next handler if the token verification fails
-	try {
-		const token = req.cookies.token;
-		verifyToken(token);
-		return res.sendStatus(StatusCodes.NO_CONTENT);
-	} catch (error: any) {
-		next(null);
-	}
-};
+import AuthRequest from "@/interfaces/auth.request";
 
 @Controller()
 export class AuthController extends BaseController {
@@ -39,7 +22,7 @@ export class AuthController extends BaseController {
 	async create(req: express.Request, res: express.Response) {
 		const body = req.body;
 
-		const user = await UserService.createUser(body);
+		const user = await AuthService.createUser(body);
 
 		res.status(StatusCodes.CREATED).json({
 			data: user,
@@ -59,5 +42,11 @@ export class AuthController extends BaseController {
 			message: "Login successfully",
 			token,
 		});
+	}
+
+	@Get("/logout", isLoggedIn)
+	async logout(_req: AuthRequest, res: express.Response) {
+		res.clearCookie("token");
+		return res.status(StatusCodes.OK).json({ message: "Logout successfully." });
 	}
 }

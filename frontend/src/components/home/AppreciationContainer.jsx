@@ -8,7 +8,7 @@ const appreciations = [
   },
   {
     name: "Jane Doe",
-    text: "I wanted to take a moment to express my gratitude and appreciation for everything you do. Your hard work and dedication have not gone unnoticed. Thank you for being an incredible",
+    text: "I wanted to take a moment to express my gratitude and appreciation for everything you do. Your hard work and dedication have not gone unnoticed. Thank you for being an incredible I wanted to take a moment to express my gratitude and appreciation for everything you do. Your hard work and dedication have not gone unnoticed. Thank you for being an incredible",
   },
   {
     name: "Emmanuel",

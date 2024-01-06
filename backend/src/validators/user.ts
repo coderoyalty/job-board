@@ -1,4 +1,4 @@
-import { string, z, ZodError } from "zod";
+import { z } from "zod";
 import { Role } from "@/models/user";
 
 const UserValidator = z.object({
@@ -11,5 +11,24 @@ const UserValidator = z.object({
 const CreateUserValidator = UserValidator.omit({ id: true });
 const LoginValidator = UserValidator.omit({ id: true, role: true });
 
+const CandidateValidator = z.object({
+	fullName: z.string(),
+	location: z.string(),
+	skills: z.string().array(),
+	resume: z.string().url(),
+});
+
+const EmployerValidator = z.object({
+	companyName: z.string(),
+	contactName: z.string(),
+	companyLocation: z.string(),
+	companyDescription: z.string(),
+});
+
 export default UserValidator;
-export { CreateUserValidator, LoginValidator };
+export {
+	CreateUserValidator,
+	LoginValidator,
+	CandidateValidator,
+	EmployerValidator,
+};

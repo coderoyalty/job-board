@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+import config from "./config";
 
 const verifyToken = (token: string) => {
-	return jwt.verify(token, process.env.JWT_SECRETKEY || "secretphrase");
+	return jwt.verify(token, config.jwt.SECRET);
 };
 
 export { verifyToken };
