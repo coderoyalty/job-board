@@ -7,7 +7,7 @@ import { isLoggedIn } from "@/middlewares/auth";
 import { StatusCodes } from "http-status-codes";
 import JobService from "@/services/job";
 import { validateJobData } from "@/middlewares/job";
-import { JobValidator } from "@/validators/job";
+import { JobUpdateValidator, JobValidator } from "@/validators/job";
 
 @Controller()
 export class JobController extends BaseController {
@@ -67,11 +67,35 @@ export class JobController extends BaseController {
 
 	@Put("/:id", isLoggedIn)
 	async updateJob(req: AuthRequest, res: Response) {
-		return res.sendStatus(StatusCodes.OK);
+		const { id } = req.params;
+		const body = req.body;
+
+		if (!req.user) {
+			return;
+		}
+
+		const updatedJob = await JobService.update(id, req.user.id, body);
+
+		return res.status(StatusCodes.OK).json({
+			message: "Successfully updated a job listing",
+			data: updatedJob,
+		});
 	}
 
 	@Delete("/:id", isLoggedIn)
 	async deleteJob(req: AuthRequest, res: Response) {
-		return res.sendStatus(StatusCodes.OK);
+		const { id } = req.params;
+		if (!req.user) {
+			return;
+		}
+		const acknowledge = await JobService.remove(id, req.user.id);
+
+		if (!acknowledge) {
+			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+				message: "the server was unable to perform this action",
+			});
+		} else {
+			return res.sendStatus(StatusCodes.NO_CONTENT);
+		}
 	}
 }

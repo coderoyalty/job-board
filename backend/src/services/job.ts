@@ -1,7 +1,7 @@
 import { BadRequestError, CustomAPIError, NotFoundError } from "@/errors";
 import JobListing from "@/models/job.listing";
-import { JobValidator } from "@/validators/job";
-import { application } from "express";
+import { JobUpdateValidator, JobValidator } from "@/validators/job";
+import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 import { z } from "zod";
 
@@ -84,9 +84,53 @@ class JobService {
 		return data;
 	}
 
-	static async update() {}
+	static async update(id: string, userId: string, data: Record<string, any>) {
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
 
-	static async remove() {}
+		const output = JobUpdateValidator.safeParse(data);
+		if (!output.success) {
+			throw new BadRequestError("please provide a valid data");
+		}
+
+		const job = await JobListing.findById(id);
+		if (!job) {
+			throw new NotFoundError("Couldn't find a job with the provided id");
+		}
+
+		if (String(job.employer) !== userId) {
+			throw new CustomAPIError(
+				"You can't perform from this action",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		await job.updateOne(output.data);
+		return await JobListing.findById(id);
+	}
+
+	static async remove(id: string, userId: string) {
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
+
+		const existingJob = await JobListing.findById(id);
+
+		if (!existingJob) {
+			throw new NotFoundError("Couldn't find a job with the provided id");
+		}
+
+		if (String(existingJob.employer) !== userId) {
+			throw new CustomAPIError(
+				"You can't perform from this action",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		const op = await existingJob.deleteOne();
+		return op.acknowledged;
+	}
 }
 
 export default JobService;

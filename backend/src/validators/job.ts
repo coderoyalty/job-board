@@ -31,4 +31,24 @@ const JobValidator = z.object({
 	salary: z.number().min(-1).max(10_000_000).optional(), //TODO: 10million as maximum bawo 😒🤪
 });
 
-export { JobValidator };
+const JobUpdateValidator = z.object({
+	title: z
+		.string()
+		.min(3)
+		.max(72)
+		.refine(data => data.trim().length > 0, {
+			message: "title cannot be empty or contain only whitespace",
+		})
+		.optional(),
+	description: z
+		.string()
+		.min(10)
+		.max(256)
+		.refine(data => data.trim().length > 0, {
+			message: "description cannot be empty or contain only whitespace",
+		})
+		.optional(),
+	deadline: z.number().min(0).optional(),
+	salary: z.number().min(-1).max(10_000_000).optional(),
+});
+export { JobValidator, JobUpdateValidator };
