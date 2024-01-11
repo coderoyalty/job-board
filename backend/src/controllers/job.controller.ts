@@ -20,7 +20,11 @@ export class JobController extends BaseController {
 		const output = JobValidator.safeParse(req.body);
 		const data = (output as any).data;
 
-		const job = await JobService.create({ ...data, employer: req.user?.id });
+		if (!req.user) {
+			return;
+		}
+
+		const job = await JobService.create({ ...data }, req.user.id);
 
 		return res.status(StatusCodes.CREATED).json({
 			data: job,
@@ -106,5 +110,10 @@ export class JobController extends BaseController {
 		} else {
 			return res.sendStatus(StatusCodes.NO_CONTENT);
 		}
+	}
+
+	@Post("/:id/apply", isLoggedIn)
+	async applyForJob(req: AuthRequest, res: Response) {
+		return res.sendStatus(StatusCodes.NO_CONTENT);
 	}
 }

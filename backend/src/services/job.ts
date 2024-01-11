@@ -1,4 +1,5 @@
 import { BadRequestError, CustomAPIError, NotFoundError } from "@/errors";
+import Employer from "@/models/employer";
 import JobListing from "@/models/job.listing";
 import { JobUpdateValidator, JobValidator } from "@/validators/job";
 import { StatusCodes } from "http-status-codes";
@@ -6,8 +7,18 @@ import mongoose from "mongoose";
 import { z } from "zod";
 
 class JobService {
-	static async create(data: z.infer<typeof JobValidator>) {
-		const job = await JobListing.create({ ...data });
+	static async create(data: z.infer<typeof JobValidator>, id: string) {
+		const employer = await Employer.findOne({
+			user: id,
+		});
+
+		if (!employer) {
+			throw new NotFoundError(
+				"The user does not have a role model yet. Please create a role for the user.",
+			);
+		}
+
+		const job = await JobListing.create({ ...data, employer: employer.id });
 
 		if (!job) {
 			throw new CustomAPIError("Couldn't create a job", 500);
