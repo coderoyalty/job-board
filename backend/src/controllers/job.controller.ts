@@ -6,8 +6,10 @@ import AuthRequest from "@/interfaces/auth.request";
 import { isLoggedIn } from "@/middlewares/auth";
 import { StatusCodes } from "http-status-codes";
 import JobService from "@/services/job";
-import { validateJobData } from "@/middlewares/job";
-import { JobUpdateValidator, JobValidator } from "@/validators/job";
+import { validateJobData, isEligibleToApply } from "@/middlewares/job";
+import { JobValidator } from "@/validators/job";
+import mongoose from "mongoose";
+import { BadRequestError } from "@/errors";
 
 @Controller()
 export class JobController extends BaseController {
@@ -112,8 +114,23 @@ export class JobController extends BaseController {
 		}
 	}
 
-	@Post("/:id/apply", isLoggedIn)
+	@Post("/:id/apply", isLoggedIn, isEligibleToApply)
 	async applyForJob(req: AuthRequest, res: Response) {
-		return res.sendStatus(StatusCodes.NO_CONTENT);
+		if (!req.user) {
+			return;
+		}
+
+		const { id } = req.params;
+
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
+
+		const application = await JobService.applyForJob(id as string, req.user.id);
+
+		return res.status(StatusCodes.CREATED).json({
+			message: "your application was successful",
+			data: application,
+		});
 	}
 }
