@@ -1,5 +1,7 @@
 import { BadRequestError, CustomAPIError, NotFoundError } from "@/errors";
+import Candidate from "@/models/candidate";
 import Employer from "@/models/employer";
+import JobApplication from "@/models/job.application";
 import JobListing from "@/models/job.listing";
 import { JobUpdateValidator, JobValidator } from "@/validators/job";
 import { StatusCodes } from "http-status-codes";
@@ -131,6 +133,69 @@ class JobService {
 
 		const op = await existingJob.deleteOne();
 		return op.acknowledged;
+	}
+
+	static async applyForJob(jobId: string, applicantId: string) {
+		const applicant = await Candidate.findOne({
+			user: applicantId,
+		});
+
+		if (!applicant) {
+			throw new NotFoundError(
+				"The user does not have a role model yet. Please create a role for the user.",
+			);
+		}
+
+		//1. avoid duplicating a job application
+
+		let application = await JobApplication.findOne({
+			jobListing: jobId,
+			candidate: applicant.id,
+		});
+
+		if (application) {
+			throw new CustomAPIError( //TODO: create custom Conflict class
+				"The user have already applied for this job. Can't apply again",
+				StatusCodes.CONFLICT,
+			);
+		}
+
+		//2. create the job application
+
+		application = await JobApplication.create({
+			jobListing: jobId,
+			candidate: applicant.id,
+		});
+
+		if (!application) {
+			throw new CustomAPIError(
+				"Something happened at our end, we couldn't apply for you.",
+			);
+		}
+
+		//3. update the job listing
+
+		const jobListing = await JobListing.findByIdAndUpdate(
+			jobId,
+			{
+				$push: { applications: application._id },
+			},
+			{ new: true },
+		);
+
+		if (!jobListing) {
+			throw new CustomAPIError(
+				"Job listing not found. Unable to update applications.",
+				StatusCodes.NOT_FOUND,
+			);
+		}
+
+		//4. update the applicant (Candidate model)
+		await applicant.updateOne({
+			$push: { applications: application._id },
+		});
+
+		return await application.populate(["candidate", "jobListing"]);
 	}
 }
 

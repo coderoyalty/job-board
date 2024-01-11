@@ -26,4 +26,21 @@ const validateJobData = async (
 	next(null);
 };
 
-export { validateJobData };
+const isEligibleToApply = async (
+	req: AuthRequest,
+	_res: express.Response,
+	next: express.NextFunction,
+) => {
+	if (req.user?.role !== Role.CANDIDATE) {
+		next(
+			new CustomAPIError(
+				"An account with employer role cannot apply for a job",
+				StatusCodes.FORBIDDEN,
+			),
+		);
+	}
+
+	next(null);
+};
+
+export { validateJobData, isEligibleToApply };
