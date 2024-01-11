@@ -124,4 +124,26 @@ export class JobController extends BaseController {
 			data: application,
 		});
 	}
+
+	@Delete("/:id/apply", isLoggedIn, isEligibleToApply)
+	async rmApplyForJob(req: AuthRequest, res: Response) {
+		if (!req.user) {
+			return;
+		}
+
+		const { id } = req.params;
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
+
+		const isDeleted = await JobService.rmApplyForJob(req.user.id, id);
+
+		if (isDeleted) {
+			return res.status(StatusCodes.NO_CONTENT).json({
+				message: "Successfully unapplied for this job",
+			});
+		} else {
+			return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

@@ -3,6 +3,7 @@ import Candidate from "@/models/candidate";
 import Employer from "@/models/employer";
 import JobApplication from "@/models/job.application";
 import JobListing from "@/models/job.listing";
+import User from "@/models/user";
 import { JobUpdateValidator, JobValidator } from "@/validators/job";
 import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
@@ -212,6 +213,50 @@ class JobService {
 		});
 
 		return await application.populate(["candidate", "jobListing"]);
+	}
+
+	static async rmApplyForJob(userId: string, jobId: string) {
+		const candidate = await Candidate.findOne({
+			user: userId,
+		});
+
+		if (!candidate) {
+			throw new CustomAPIError(
+				"You're forbidden from this action",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		const application = await JobApplication.findOne({
+			jobListing: jobId,
+			candidate: candidate.id,
+		});
+
+		if (!application) {
+			throw new NotFoundError("you didn't apply for this listing.");
+		}
+
+		// 2. remove the application model from the candidate model
+		await candidate.updateOne({
+			$pull: {
+				applications: application.id,
+			},
+		});
+
+		const joblisting = await JobListing.findById(jobId);
+
+		// 3. remove the application model from the job-listing model
+		if (joblisting) {
+			await joblisting.updateOne({
+				$pull: {
+					applications: application.id,
+				},
+			});
+		}
+
+		const result = await application.deleteOne();
+
+		return result.acknowledged;
 	}
 }
 
