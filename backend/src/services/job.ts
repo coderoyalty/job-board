@@ -26,6 +26,12 @@ class JobService {
 			throw new CustomAPIError("Couldn't create a job", 500);
 		}
 
+		await employer.updateOne({
+			$push: {
+				jobListings: job._id,
+			},
+		});
+
 		return job;
 	}
 
