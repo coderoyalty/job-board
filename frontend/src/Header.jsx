@@ -100,15 +100,12 @@ const DefaultHeader = () => {
       <Box>
         <ButtonGroup>
           <Stack direction={size.width < widthLimit ? "column" : "row"}>
-            <Button variant="solid" onClick={() => navigate("/login")}>
-              Login
-            </Button>
             <Button
-              colorScheme="whatsapp"
               variant="solid"
-              onClick={() => navigate("/employer-signup")}
+              onClick={() => navigate("/login")}
+              colorScheme="whatsapp"
             >
-              Post a Job
+              Login
             </Button>
           </Stack>
         </ButtonGroup>
