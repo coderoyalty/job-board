@@ -1,9 +1,12 @@
 import React from "react";
 import { Box, Container } from "@chakra-ui/react";
 import RegistrationForm from "../components/form/RegistrationForm";
+import { useSearchParams } from "react-router-dom";
 
-const CandidateSignup = () => {
-  const role = "candidate";
+const SignupPage = () => {
+  const [searchParams] = useSearchParams();
+
+  let role = searchParams.get("role") || "candidate";
 
   return (
     <Box
@@ -20,4 +23,4 @@ const CandidateSignup = () => {
   );
 };
 
-export default CandidateSignup;
+export default SignupPage;

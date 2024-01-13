@@ -8,69 +8,74 @@ import {
   FormLabel,
   Input,
   useToast,
+  Divider,
+  Text,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { fetchData } from "../../api";
 
 const LoginForm = () => {
   const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   const toast = useToast();
 
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    const body = {
+      ...values,
+    };
+
+    try {
+      const response = await fetchData("/auth/login", "POST", body);
+
+      if (!response.ok) {
+        toast({
+          title: "Sign-In Failed",
+          description: response.data.message,
+          status: "error",
+          isClosable: true,
+          duration: 2000,
+          onCloseComplete: () => {},
+        });
+      } else {
+        toast({
+          title: "Sign-In Success",
+          description: "We've logged you in.",
+          status: "success",
+          isClosable: true,
+          duration: 3000,
+          onCloseComplete: () => {
+            navigate("/dashboard", { replace: true });
+          },
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Sign-In Failed",
+        description: "We couldn't sign-in",
+        status: "error",
+        isClosable: true,
+        duration: 2000,
+      });
+    }
+
+    formik.resetForm({ email: "", password: "" });
+    setLoading(false);
+  };
+
   const formik = useFormik({
     initialValues: { email: "", password: "" },
-    onSubmit: (values) => {
-      setLoading(true);
-
-      let headersList = {
-        Accept: "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-        "Content-Type": "application/json",
-      };
-
-      const body = {
-        ...values,
-      };
-
-      fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: headersList,
-        body: JSON.stringify(body),
-      }).then((response) => {
-        console.log(response.status, response.statusText);
-        if (!response.ok) {
-          formik.values = { email: "", password: "" };
-
-          toast({
-            title: "Account Creation Failed",
-            description: "We couldn't create an account for you.",
-            status: "error",
-            isClosable: true,
-            duration: 3000,
-            onCloseComplete: () => {},
-          });
-        } else {
-          toast({
-            title: "Account Created",
-            description: "We've created an account for you.",
-            status: "success",
-            isClosable: true,
-            duration: 3000,
-            onCloseComplete: () => {},
-          });
-        }
-
-        formik.setValues({ email: "", password: "" });
-      });
-
-      setLoading(false);
-    },
+    onSubmit: handleSubmit,
   });
 
   return (
-    <Stack direction="column" spacing={6} className="p-4">
-      <Heading textAlign="center">Create An Account</Heading>
+    <Stack direction="column" spacing={4} className="px-4 py-2">
+      <Heading textAlign="center">Sign In</Heading>
       <Box as="form" onSubmit={formik.handleSubmit}>
-        <Stack direction={"column"} spacing={6}>
+        <Stack direction={"column"} spacing={4}>
           <FormControl isRequired>
             <FormLabel>Email</FormLabel>
             <Input
@@ -96,6 +101,13 @@ const LoginForm = () => {
           </Button>
         </Stack>
       </Box>
+      <Divider />
+      <Text className="text-center">
+        Don't have an account?{" "}
+        <ChakraLink color="teal.500" as={ReactRouterLink} to="/signup">
+          register.
+        </ChakraLink>
+      </Text>
     </Stack>
   );
 };

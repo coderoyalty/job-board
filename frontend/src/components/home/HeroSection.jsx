@@ -34,13 +34,13 @@ const HeroSection = () => {
           <ButtonGroup mt={8}>
             <Button
               colorScheme="whatsapp"
-              onClick={() => navigate("/employer-signup")}
+              onClick={() => navigate("/signup?role=employer")}
             >
               Post Jobs
             </Button>
             <Button
               colorScheme="twitter"
-              onClick={() => navigate("/candidate-signup")}
+              onClick={() => navigate("/signup?role=candidate")}
             >
               Apply For Jobs
             </Button>
