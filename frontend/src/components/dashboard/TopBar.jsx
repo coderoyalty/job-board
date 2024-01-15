@@ -8,19 +8,9 @@ import {
 import { Link } from "react-router-dom";
 import { Avatar, Menu, MenuButton, MenuList, Flex } from "@chakra-ui/react";
 
-export default function TopBar({ showNav, setShowNav }) {
+const MenuComponent = () => {
   return (
-    <div
-      className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] bg-[#C08261] ${
-        showNav ? "pl-56" : ""
-      }`}
-    >
-      <div className="pl-4 md:pl-16">
-        <Bars3CenterLeftIcon
-          className="h-8 w-8 text-gray-700 cursor-pointer"
-          onClick={() => setShowNav(!showNav)}
-        />
-      </div>
+    <>
       <div className="flex items-center pr-4 md:pr-16">
         <Menu>
           <MenuButton>
@@ -54,9 +44,34 @@ export default function TopBar({ showNav, setShowNav }) {
               <UserIcon className="h-5 w-5" />
               Account
             </Link>
+            <Link
+              href="#"
+              className="flex hover:bg-red-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
+            >
+              <UserIcon className="h-5 w-5" />
+              Login
+            </Link>
           </MenuList>
         </Menu>
       </div>
+    </>
+  );
+};
+
+export default function TopBar({ showNav, setShowNav }) {
+  return (
+    <div
+      className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] bg-[#C08261] ${
+        showNav ? "pl-56" : ""
+      }`}
+    >
+      <div className="pl-4 md:pl-16">
+        <Bars3CenterLeftIcon
+          className="h-8 w-8 text-gray-700 cursor-pointer"
+          onClick={() => setShowNav(!showNav)}
+        />
+      </div>
+      <MenuComponent />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import SideBar from "./SideBar";
 import TopBar from "./TopBar";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DashboardLayout({ children }) {
   const [showNav, setShowNav] = useState(false);
@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }) {
       setShowNav(innerWidth > 640 || !isMobile);
     }
 
-    handleResize(); // Initial check
+    // handleResize(); // Initial check
 
     window.addEventListener("resize", handleResize);
 
@@ -30,25 +30,28 @@ export default function DashboardLayout({ children }) {
   return (
     <>
       <TopBar showNav={showNav} setShowNav={setShowNav} />
-      {/* <AnimatePresence> */}
-      {showNav && (
-        <motion.div
-          initial={{ x: 0 }}
-          animate={showNav ? "open" : "closed"}
-          transition={{ delayChildren: 0.8, duration: 1.2 }}
-          variants={variants}
-        >
-          <SideBar showNav={showNav} />
-        </motion.div>
-      )}
-      {/* </AnimatePresence> */}
-      <main
-        className={`pt-14 transition-all duration-[400ms] ${
-          showNav && !isMobile ? "pl-56" : ""
-        }`}
+      <AnimatePresence mode="wait">
+        {showNav && (
+          <motion.div
+            initial={{ x: 0 }}
+            animate={showNav ? "open" : "closed"}
+            transition={{ duration: 0.5 }}
+            variants={variants}
+            exit={{ x: 0 }}
+          >
+            <SideBar showNav={showNav} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.main
+        className={`pt-14 ${showNav && !isMobile ? "pl-[15rem]" : ""}`}
+        initial={{ paddingLeft: 0 }}
+        animate={{ paddingLeft: showNav && !isMobile ? "15rem" : 0 }}
+        transition={{ duration: 0.15 }} // Animation duration
       >
         <div className="px-4 md:px-16 py-4">{children}</div>
-      </main>
+      </motion.main>
     </>
   );
 }
