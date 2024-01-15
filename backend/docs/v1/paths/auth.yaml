@@ -1,0 +1,53 @@
+paths:
+  /api/auth/register:
+    post:
+      summary: User registration
+      tags:
+        - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationData"
+      responses:
+        "201":
+          description: Successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /api/auth/login:
+    post:
+      summary: User login
+      tags:
+        - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginData"
+      responses:
+        "200":
+          description: Successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "204":
+          description: "The request is already authenticated"
+        "400":
+          description: "One of the provided fields is invalid"
+        "401":
+          description: "The provided credentials is invalid"
+  /api/auth/logout:
+    get:
+      summary: User logout
+      tags:
+        - Authentication
+      requestBody:
+
+      responses:
+        "200":
+          description: Successfully logged out
+        "401":
+          description: Couldn't logout because the request is unauthenticated

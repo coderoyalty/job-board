@@ -1,0 +1,45 @@
+components:
+  schemas:
+    RegistrationData:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum:
+            - employer
+            - candidate
+
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+        message:
+          type: string
+        success:
+          type: boolean
+
+    LoginData:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string

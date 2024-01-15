@@ -4,10 +4,14 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import BaseController from "./controllers/base.controller";
 import errorMiddleWare from "./middlewares/error.middleware";
+import swaggerUI from "swagger-ui-express";
 import config from "./utils/config";
 import { customLog } from "./utils/custom.log";
+import { convertForComponents, convertForPaths } from "./utils/doc";
 
 export default class App {
+	static endpoints: string[] = [];
+
 	private static instance: App | null = null;
 	private _app: Express;
 	private port: number;
@@ -19,8 +23,6 @@ export default class App {
 	private set app(v: Express) {
 		this._app = v;
 	}
-
-	static endpoints: string[] = [];
 
 	constructor() {
 		this._app = express();
@@ -49,6 +51,7 @@ export default class App {
 		this.app.use(
 			cors({
 				origin: "*",
+				credentials: true,
 			}),
 		);
 		this.app.use(cookieParser(config.COOKIE_SECRET));
@@ -59,6 +62,8 @@ export default class App {
 				extended: false,
 			}),
 		);
+
+		this.initSwaggerDoc();
 	}
 
 	static getInstance() {
@@ -71,6 +76,30 @@ export default class App {
 
 	private initErrHandler() {
 		this.app.use(errorMiddleWare);
+	}
+
+	private initSwaggerDoc() {
+		const paths = convertForPaths("v1");
+		const components = convertForComponents("v1");
+
+		const swaggerDoc = {
+			openapi: "3.0.0",
+			info: {
+				title: "Your Project API",
+				version: "1.0.0",
+				description: "RESTful API for your project",
+			},
+			paths,
+			components,
+		};
+
+		this.app.get("/", (req, res) => {
+			res.send(
+				'<p style="font-size: 36px;">API: <a href="/api/docs">Documentation</a></p>',
+			);
+		});
+
+		this.app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 	}
 
 	public run() {
