@@ -4,11 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import App from "@/app";
 import supertest from "supertest";
-import BaseController from "@/controllers/base.controller";
-import { Get } from "@/utils/route.decorator";
 import connectDB from "@/utils/database";
 import { Connection } from "mongoose";
-import Controller from "@/utils/controller.decorator";
 
 const generateHex24 = () => {
 	const chars = "abcdef0123456789";
@@ -23,40 +20,25 @@ const generateHex24 = () => {
 	return str;
 };
 
-@Controller()
-class ExampleController extends BaseController {
-	constructor() {
-		super("/test");
-	}
-
-	@Get("/")
-	async get(req: any, res: any) {
-		return res.send("Hello Test!");
-	}
-}
-
-describe("AuthController, UserController, ExampleController", () => {
+describe("AuthController, UserController", () => {
 	let app: App;
 	let connection: Connection;
+	let userInfo: Record<string, any>;
 
 	beforeAll(async () => {
 		connection = await connectDB();
+		userInfo = {
+			email: "code@gmail.com",
+			password: generateHex24(),
+			role: "employer",
+		};
 	});
 
 	beforeEach(() => {
 		app = App.getInstance();
 	});
 
-	it("should handle GET request and respond with 'Hello Test!'", async () => {
-		const request = supertest(app.app);
-
-		const response = await request.get(`/api/test`);
-
-		expect(response.text).toBe("Hello Test!");
-		expect(response.status).toBe(200);
-	});
-
-	it("should handle GET request and respond with 404", async () => {
+	it("should handle GET request and respond with 404 for an invalid user id", async () => {
 		const request = supertest(app.app);
 
 		const response = await request.get(`/api/users/${generateHex24()}`);
@@ -64,7 +46,7 @@ describe("AuthController, UserController, ExampleController", () => {
 		expect(response.status).toBe(404);
 	});
 
-	it("should handle POST request and respond with 201", async () => {
+	it("should handle POST request and respond with 400 for an invalid email", async () => {
 		const request = supertest(app.app);
 
 		const data = {
@@ -79,6 +61,61 @@ describe("AuthController, UserController, ExampleController", () => {
 			.set("Accept", "application/json");
 
 		expect(response.status).toBe(400);
+	});
+
+	it("should handle POST request with a 400 response for an invalid role type", async () => {
+		const request = supertest(app.app);
+
+		const data = {
+			email: "code@code.com", // invalid email address
+			password: "CodeCap2024",
+			role: "employee", // invalid role, role can be only "employer" or "candidate",
+		};
+
+		const response = await request
+			.post(`/api/auth/register`)
+			.send(data)
+			.set("Accept", "application/json");
+
+		expect(response.status).toBe(400);
+	});
+
+	it("should successfully register a new account", async () => {
+		const request = supertest(app.app);
+		const response = await request
+			.post(`/api/auth/register`)
+			.send(userInfo)
+			.set("Accept", "application/json");
+		expect(response.status).toBe(201);
+	});
+
+	it("should gracefully avoid account duplication", async () => {
+		const request = supertest(app.app);
+		const response = await request
+			.post(`/api/auth/register`)
+			.send(userInfo)
+			.set("Accept", "application/json");
+		expect(response.status).toBe(409);
+	});
+
+	it("should restrict an account access when password is incorrect", async () => {
+		const request = supertest(app.app);
+		const response = await request
+			.post(`/api/auth/login`)
+			.send({ email: userInfo.email, password: generateHex24() })
+			.set("Accept", "application/json");
+		expect(response.status).toBe(401);
+	});
+
+	it("should grant access when password is correct", async () => {
+		const request = supertest(app.app);
+		const response = await request
+			.post(`/api/auth/login`)
+			.send({ email: userInfo.email, password: userInfo.password })
+			.set("Accept", "application/json");
+		expect(response.status).toBe(200);
+		expect(response.body).toHaveProperty("message");
+		expect(response.body.message).toBe("Login successfully");
 	});
 
 	afterAll(async () => {

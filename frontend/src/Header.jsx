@@ -15,10 +15,30 @@ import {
   DrawerFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useWindowSize } from "@uidotdev/usehooks";
+
+const HamburgerIcon = () => {
+  return (
+    <>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+        />
+      </svg>
+    </>
+  );
+};
 
 const HeaderContext = React.createContext();
 
@@ -80,15 +100,12 @@ const DefaultHeader = () => {
       <Box>
         <ButtonGroup>
           <Stack direction={size.width < widthLimit ? "column" : "row"}>
-            <Button variant="solid" onClick={() => navigate("/login")}>
-              Login
-            </Button>
             <Button
-              colorScheme="whatsapp"
               variant="solid"
-              onClick={() => navigate("/employer-signup")}
+              onClick={() => navigate("/login")}
+              colorScheme="whatsapp"
             >
-              Post a Job
+              Login
             </Button>
           </Stack>
         </ButtonGroup>
