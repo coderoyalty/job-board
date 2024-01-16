@@ -16,6 +16,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: All data must be correctly provided (e.g email format, role enum)
+        "409":
+          description: The provided email address had been registered before
   /api/auth/login:
     post:
       summary: User login
