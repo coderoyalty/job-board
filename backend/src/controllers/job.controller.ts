@@ -10,6 +10,7 @@ import { validateJobData, isEligibleToApply } from "@/middlewares/job";
 import { JobValidator } from "@/validators/job";
 import mongoose from "mongoose";
 import { BadRequestError } from "@/errors";
+import { isValidObjectIds } from "@/services";
 
 @Controller()
 export class JobController extends BaseController {
@@ -17,6 +18,7 @@ export class JobController extends BaseController {
 		super("/jobs");
 	}
 
+	/** Create a new job listing */
 	@Post("/", isLoggedIn, validateJobData)
 	async createJob(req: AuthRequest, res: Response) {
 		const output = JobValidator.safeParse(req.body);
@@ -34,6 +36,7 @@ export class JobController extends BaseController {
 		});
 	}
 
+	/** Get a list of job listings */
 	@Get("/")
 	async getJobs(req: Request, res: Response) {
 		const { page = "1", limit = "10", location, title, latest } = req.query;
@@ -60,6 +63,7 @@ export class JobController extends BaseController {
 		});
 	}
 
+	/** Get details of a specific job listing */
 	@Get("/:id")
 	async getJob(req: Request, res: Response) {
 		const { id } = req.params;
@@ -71,6 +75,7 @@ export class JobController extends BaseController {
 		});
 	}
 
+	/** update a job listing */
 	@Put("/:id", isLoggedIn)
 	async updateJob(req: AuthRequest, res: Response) {
 		const { id } = req.params;
@@ -88,6 +93,7 @@ export class JobController extends BaseController {
 		});
 	}
 
+	/** delete a job listing */
 	@Delete("/:id", isLoggedIn)
 	async deleteJob(req: AuthRequest, res: Response) {
 		const { id } = req.params;
@@ -105,7 +111,8 @@ export class JobController extends BaseController {
 		}
 	}
 
-	@Post("/:id/apply", isLoggedIn, isEligibleToApply)
+	/** submit an application for a specific job listing */
+	@Post("/:id/applications", isLoggedIn, isEligibleToApply)
 	async applyForJob(req: AuthRequest, res: Response) {
 		if (!req.user) {
 			return;
@@ -122,6 +129,49 @@ export class JobController extends BaseController {
 		return res.status(StatusCodes.CREATED).json({
 			message: "your application was successful",
 			data: application,
+		});
+	}
+
+	/** remove an application for a specific job listing */
+	@Delete("/:id/applications", isLoggedIn, isEligibleToApply)
+	async rmApplyForJob(req: AuthRequest, res: Response) {
+		if (!req.user) {
+			return;
+		}
+
+		const { id } = req.params;
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
+
+		const isDeleted = await JobService.rmApplyForJob(req.user.id, id);
+
+		if (isDeleted) {
+			return res.status(StatusCodes.NO_CONTENT).json({
+				message: "Successfully unapplied for this job",
+			});
+		} else {
+			return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/** list of applications for a specific job listing */
+	@Get("/:id/applications", isLoggedIn)
+	async getApplications(req: AuthRequest, res: Response) {
+		if (!req.user) {
+			return;
+		}
+		const { id } = req.params;
+
+		if (!isValidObjectIds(id)) {
+			throw new BadRequestError(`${id} is not a valid object-ID`);
+		}
+
+		const applications = await JobService.jobApplications(id, req.user.id);
+
+		return res.json({
+			message: "Operation was successful",
+			data: applications,
 		});
 	}
 }

@@ -1,5 +1,5 @@
 import "@/controllers/base.controller";
-import "@/controllers/user";
+import "@/controllers/user.controller";
 import "@/controllers/auth.controller";
 import "@/controllers/job.controller";
 

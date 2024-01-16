@@ -7,7 +7,7 @@ interface IJobListing {
 	location: string;
 	deadline: Date;
 	employer: mongoose.Types.ObjectId;
-	application: Array<mongoose.Types.ObjectId>;
+	applications: Array<mongoose.Types.ObjectId>;
 	salary: number;
 	company: string;
 }
