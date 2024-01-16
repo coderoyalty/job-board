@@ -1,0 +1,120 @@
+paths:
+  /api/jobs:
+    post:
+      summary: Create a new job listing
+      tags:
+        - Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The title of the job
+                description:
+                  type: string
+                  description: The description of the job
+                deadline:
+                  type: string
+                  format: date-time
+                  description: The deadline for the job
+              required:
+                - title
+                - description
+                - deadline
+      responses:
+        "201":
+          description: Successfully created a new job listing
+        "400":
+          description: provide the necessary fields to create a job
+        "401":
+          description: You need to login to perform the action
+        "403":
+          description: Failed to create a new listing, because the current user is not an employer
+    get:
+      summary: Get a list of job listings
+      tags:
+        - Jobs
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response with a list of jobs
+  /api/jobs/{id}:
+    get:
+      summary: Get job details by ID
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          description: Job ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: the ID is valid and the details exists
+        "400":
+          description: the provider ID is not a correct format (hex 24 characters expected)
+        "404":
+          description: the ID doesn't reference an existing job listing
+
+    delete:
+      summary: remove a job listing
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          description: Job ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: the job listing had been removed successfully
+        "400":
+          description: the data provided is invalid
+        "401":
+          description: you're to be logged-in to perform this action
+        "403":
+          description: can't delete a job-listing you didn't create
+        "500":
+          description: couldn't delete the job-listing at the moment
+
+    put:
+      summary: update a job listing
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          description: Job ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: the job listing had been update successfully
+        "400":
+          description: the data provided is invalid
+        "401":
+          description: you're to be logged-in to perform this action
+        "403":
+          description: can't update a job-listing you didn't create
+        "500":
+          description: couldn't update the job-listing at the moment
