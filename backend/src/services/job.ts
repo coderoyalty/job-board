@@ -258,6 +258,27 @@ class JobService {
 
 		return result.acknowledged;
 	}
+
+	static async jobApplications(jobId: string, requesterID: string) {
+		const jobListing = await JobListing.findById(jobId).populate("employer");
+
+		if (!jobListing) {
+			throw new NotFoundError("The job-listing does not exist");
+		}
+
+		if (
+			jobListing.employer &&
+			typeof jobListing.employer === "object" &&
+			"user" in jobListing.employer &&
+			jobListing.employer.user === requesterID
+		) {
+			//. the requester is the joblisting creator
+		}
+
+		return await JobApplication.find({
+			jobListing: jobListing.id,
+		}).populate(["candidate"]);
+	}
 }
 
 export default JobService;
