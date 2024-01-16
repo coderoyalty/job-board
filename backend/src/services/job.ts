@@ -53,20 +53,30 @@ class JobService {
 		query: Record<string, string>,
 		page: number,
 		limit: number,
-		ascending: any,
+		latest = false,
 	) {
 		const skip = (page - 1) * limit;
 		const jobListingsWithCount = await JobListing.aggregate([
 			{ $match: { ...query } },
-			{ $sort: { createdAt: ascending } },
+			{ $sort: { createdAt: latest ? -1 : 1 } },
 			{ $skip: skip },
 			{ $limit: limit },
 			{
 				$addFields: {
-					applications: { $size: "$applications" },
+					applicants: { $size: "$applications" },
 				},
 			},
+			{ $unset: "applications" },
 		]).exec();
+
+		const transformedJobListings = jobListingsWithCount.map(
+			(doc: { _id: any }) => ({
+				...doc,
+				id: doc._id,
+				_id: undefined,
+				__v: undefined,
+			}),
+		);
 
 		const totalDocs = await JobListing.countDocuments().exec();
 		const totalPages = Math.ceil(totalDocs / limit);
@@ -75,7 +85,7 @@ class JobService {
 		const hasPrevPage = page > 1;
 
 		const data = {
-			data: jobListingsWithCount,
+			data: transformedJobListings,
 			total: totalDocs,
 			pages: totalPages,
 			count: jobListingsWithCount.length,
