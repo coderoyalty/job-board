@@ -15,7 +15,7 @@ const CandidateValidator = z.object({
 	fullName: z.string(),
 	location: z.string(),
 	skills: z.string().array(),
-	resume: z.string().url(),
+	resume: z.string().url().optional(),
 });
 
 const EmployerValidator = z.object({

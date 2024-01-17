@@ -1,6 +1,8 @@
-import { CustomAPIError } from "@/errors";
+import { CustomAPIError, NotFoundError } from "@/errors";
 import UnauthorizedError from "@/errors/unauthorized";
-import User from "@/models/user";
+import Candidate from "@/models/candidate";
+import Employer from "@/models/employer";
+import User, { Role } from "@/models/user";
 import { CreateUserValidator, LoginValidator } from "@/validators/user";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
@@ -41,6 +43,33 @@ class AuthService {
 		} catch {
 			throw new CustomAPIError("");
 		}
+	}
+
+	static async currentUser(id: string) {
+		const user = await User.findById(id);
+
+		let roleData;
+
+		if (!user) {
+			throw new NotFoundError("no use exists with the provided id");
+		}
+
+		if (user.role === Role.CANDIDATE) {
+			roleData = await Candidate.findOne({
+				user: user.id,
+			});
+		} else {
+			roleData = await Employer.findOne({
+				user: user.id,
+			});
+		}
+
+		const result = {
+			user: user.toJSON(),
+			[user.role]: roleData,
+		};
+
+		return result;
 	}
 }
 

@@ -1,16 +1,37 @@
 import { BadRequestError, CustomAPIError, NotFoundError } from "@/errors";
+import Candidate from "@/models/candidate";
+import Employer from "@/models/employer";
+import JobApplication from "@/models/job.application";
 import JobListing from "@/models/job.listing";
-import { JobValidator } from "@/validators/job";
+import User from "@/models/user";
+import { JobUpdateValidator, JobValidator } from "@/validators/job";
+import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 import { z } from "zod";
 
 class JobService {
-	static async create(data: z.infer<typeof JobValidator>) {
-		const job = await JobListing.create({ ...data });
+	static async create(data: z.infer<typeof JobValidator>, id: string) {
+		const employer = await Employer.findOne({
+			user: id,
+		});
+
+		if (!employer) {
+			throw new NotFoundError(
+				"The user does not have a role model yet. Please create a role for the user.",
+			);
+		}
+
+		const job = await JobListing.create({ ...data, employer: employer.id });
 
 		if (!job) {
 			throw new CustomAPIError("Couldn't create a job", 500);
 		}
+
+		await employer.updateOne({
+			$push: {
+				jobListings: job._id,
+			},
+		});
 
 		return job;
 	}
@@ -33,20 +54,30 @@ class JobService {
 		query: Record<string, string>,
 		page: number,
 		limit: number,
-		ascending: any,
+		latest = false,
 	) {
 		const skip = (page - 1) * limit;
 		const jobListingsWithCount = await JobListing.aggregate([
 			{ $match: { ...query } },
-			{ $sort: { createdAt: ascending } },
+			{ $sort: { createdAt: latest ? -1 : 1 } },
 			{ $skip: skip },
 			{ $limit: limit },
 			{
 				$addFields: {
-					applications: { $size: "$applications" },
+					applicants: { $size: "$applications" },
 				},
 			},
+			{ $unset: "applications" },
 		]).exec();
+
+		const transformedJobListings = jobListingsWithCount.map(
+			(doc: { _id: any }) => ({
+				...doc,
+				id: doc._id,
+				_id: undefined,
+				__v: undefined,
+			}),
+		);
 
 		const totalDocs = await JobListing.countDocuments().exec();
 		const totalPages = Math.ceil(totalDocs / limit);
@@ -55,7 +86,7 @@ class JobService {
 		const hasPrevPage = page > 1;
 
 		const data = {
-			data: jobListingsWithCount,
+			data: transformedJobListings,
 			total: totalDocs,
 			pages: totalPages,
 			count: jobListingsWithCount.length,
@@ -73,9 +104,181 @@ class JobService {
 		return data;
 	}
 
-	static async update() {}
+	static async update(id: string, userId: string, data: Record<string, any>) {
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
 
-	static async remove() {}
+		const output = JobUpdateValidator.safeParse(data);
+		if (!output.success) {
+			throw new BadRequestError("please provide a valid data");
+		}
+
+		const job = await JobListing.findById(id);
+		if (!job) {
+			throw new NotFoundError("Couldn't find a job with the provided id");
+		}
+
+		if (String(job.employer) !== userId) {
+			throw new CustomAPIError(
+				"You can't perform from this action",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		await job.updateOne(output.data);
+		return await JobListing.findById(id);
+	}
+
+	static async remove(id: string, userId: string) {
+		if (!mongoose.isValidObjectId(id)) {
+			throw new BadRequestError("provided identifier is not valid");
+		}
+
+		const existingJob = await JobListing.findById(id);
+
+		if (!existingJob) {
+			throw new NotFoundError("Couldn't find a job with the provided id");
+		}
+
+		if (String(existingJob.employer) !== userId) {
+			throw new CustomAPIError(
+				"You can't perform from this action",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		const op = await existingJob.deleteOne();
+		return op.acknowledged;
+	}
+
+	static async applyForJob(jobId: string, applicantId: string) {
+		const applicant = await Candidate.findOne({
+			user: applicantId,
+		});
+
+		if (!applicant) {
+			throw new NotFoundError(
+				"The user does not have a role model yet. Please create a role for the user.",
+			);
+		}
+
+		//1. avoid duplicating a job application
+
+		let application = await JobApplication.findOne({
+			jobListing: jobId,
+			candidate: applicant.id,
+		});
+
+		if (application) {
+			throw new CustomAPIError( //TODO: create custom Conflict class
+				"The user have already applied for this job. Can't apply again",
+				StatusCodes.CONFLICT,
+			);
+		}
+
+		//2. create the job application
+
+		application = await JobApplication.create({
+			jobListing: jobId,
+			candidate: applicant.id,
+		});
+
+		if (!application) {
+			throw new CustomAPIError(
+				"Something happened at our end, we couldn't apply for you.",
+			);
+		}
+
+		//3. update the job listing
+
+		const jobListing = await JobListing.findByIdAndUpdate(
+			jobId,
+			{
+				$push: { applications: application._id },
+			},
+			{ new: true },
+		);
+
+		if (!jobListing) {
+			throw new CustomAPIError(
+				"Job listing not found. Unable to update applications.",
+				StatusCodes.NOT_FOUND,
+			);
+		}
+
+		//4. update the applicant (Candidate model)
+		await applicant.updateOne({
+			$push: { applications: application._id },
+		});
+
+		return await application.populate(["candidate", "jobListing"]);
+	}
+
+	static async rmApplyForJob(userId: string, jobId: string) {
+		const candidate = await Candidate.findOne({
+			user: userId,
+		});
+
+		if (!candidate) {
+			throw new CustomAPIError(
+				"You're forbidden from this action",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		const application = await JobApplication.findOne({
+			jobListing: jobId,
+			candidate: candidate.id,
+		});
+
+		if (!application) {
+			throw new NotFoundError("you didn't apply for this listing.");
+		}
+
+		// 2. remove the application model from the candidate model
+		await candidate.updateOne({
+			$pull: {
+				applications: application.id,
+			},
+		});
+
+		const joblisting = await JobListing.findById(jobId);
+
+		// 3. remove the application model from the job-listing model
+		if (joblisting) {
+			await joblisting.updateOne({
+				$pull: {
+					applications: application.id,
+				},
+			});
+		}
+
+		const result = await application.deleteOne();
+
+		return result.acknowledged;
+	}
+
+	static async jobApplications(jobId: string, requesterID: string) {
+		const jobListing = await JobListing.findById(jobId).populate("employer");
+
+		if (!jobListing) {
+			throw new NotFoundError("The job-listing does not exist");
+		}
+
+		if (
+			jobListing.employer &&
+			typeof jobListing.employer === "object" &&
+			"user" in jobListing.employer &&
+			jobListing.employer.user === requesterID
+		) {
+			//. the requester is the joblisting creator
+		}
+
+		return await JobApplication.find({
+			jobListing: jobListing.id,
+		}).populate(["candidate"]);
+	}
 }
 
 export default JobService;

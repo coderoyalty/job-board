@@ -54,7 +54,7 @@ function findTimeLeft(start, end) {
   return `${value} to go`;
 }
 
-const JobCard = () => {
+const JobCard = ({ data }) => {
   return (
     <>
       <div className="transition-all mx-2 w-[324px] sm:w-[424px] md:max-w-[482px] bg-[#E2C799] shadow-md rounded overflow-hidden">
@@ -62,11 +62,11 @@ const JobCard = () => {
           <Stack direction={"column"} spacing={1} className="p-2 md:p-4">
             {/* Job Info */}
             <div className="flex justify-between">
-              <div className="font-bold">{data.jobTitle}</div>
+              <div className="font-bold">{data.title}</div>
               <div>
                 <Badge colorScheme="whatsapp">
                   <span className="text-base">
-                    {data.created.toLocaleDateString()}
+                    {new Date(data.createdAt).toLocaleDateString()}
                   </span>
                 </Badge>
               </div>
@@ -134,7 +134,10 @@ const JobCard = () => {
               <StackItem>
                 <Badge className="twitter animate-bounce">
                   <span className="text-sm">
-                    {findTimeLeft(data.created, data.deadline)}
+                    {findTimeLeft(
+                      new Date(data.createdAt),
+                      new Date(data.deadline)
+                    )}
                   </span>
                 </Badge>
               </StackItem>

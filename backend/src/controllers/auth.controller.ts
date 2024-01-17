@@ -44,9 +44,19 @@ export class AuthController extends BaseController {
 		});
 	}
 
+	@Post("/logout", isLoggedIn)
 	@Get("/logout", isLoggedIn)
 	async logout(_req: AuthRequest, res: express.Response) {
 		res.clearCookie("token");
 		return res.status(StatusCodes.OK).json({ message: "Logout successfully." });
+	}
+
+	@Get("/me", isLoggedIn)
+	async currentUser(req: AuthRequest, res: express.Response) {
+		if (!req.user) return;
+
+		const data = await AuthService.currentUser(req.user.id);
+
+		return res.json({ ...data });
 	}
 }
