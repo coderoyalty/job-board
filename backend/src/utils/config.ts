@@ -13,6 +13,9 @@ const config = {
 	},
 	PORT: (process.env.PORT || 5000) as number,
 	enableLogging: process.env.ENV === "dev" ? true : false,
+	allowedOrigins: process.env.ALLOWED_ORIGINS
+		? process.env.ALLOWED_ORIGINS.split(",")
+		: [],
 };
 
 export default config;

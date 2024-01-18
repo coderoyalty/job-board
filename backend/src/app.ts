@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import morgan from "morgan";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import BaseController from "./controllers/base.controller";
 import errorMiddleWare from "./middlewares/error.middleware";
@@ -46,12 +46,18 @@ export default class App {
 	}
 
 	private initMiddleware() {
-		this.app.use(
-			cors({
-				origin: "http://localhost:5173",
-				credentials: true,
-			}),
-		);
+		const allowedOrigins = config.allowedOrigins;
+		const corsOptions: CorsOptions = {
+			origin: function (origin: string | undefined, callback: any) {
+				if (!origin || allowedOrigins.includes(origin)) {
+					callback(null, true);
+				} else {
+					callback(new Error("Not allowed by CORS"));
+				}
+			},
+			credentials: true,
+		};
+		this.app.use(cors(corsOptions));
 		this.app.use(cookieParser(config.COOKIE_SECRET));
 		this.app.use(morgan("dev"));
 		this.app.use(express.json());
