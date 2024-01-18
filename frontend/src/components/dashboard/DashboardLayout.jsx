@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import SideBar from "./SideBar";
 import TopBar from "./TopBar";

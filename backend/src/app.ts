@@ -48,7 +48,8 @@ export default class App {
 	private initMiddleware() {
 		this.app.use(
 			cors({
-				origin: "*",
+				origin: "http://localhost:5173",
+				credentials: true,
 			}),
 		);
 		this.app.use(cookieParser(config.COOKIE_SECRET));

@@ -5,10 +5,12 @@ import {
   CreditCardIcon,
   UserIcon,
 } from "@heroicons/react/24/solid";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, Menu, MenuButton, MenuList, Flex } from "@chakra-ui/react";
+import axios from "../../api/axios";
 
 const MenuComponent = () => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="flex items-center pr-4 md:pr-16">
@@ -47,9 +49,18 @@ const MenuComponent = () => {
             <Link
               href="#"
               className="flex hover:bg-red-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
+              onClick={(e) => {
+                e.preventDefault();
+                const logout = async () => {
+                  await axios.get("/auth/logout");
+                };
+
+                logout();
+                navigate("/", { replace: true });
+              }}
             >
               <UserIcon className="h-5 w-5" />
-              Login
+              Logout
             </Link>
           </MenuList>
         </Menu>
@@ -58,6 +69,7 @@ const MenuComponent = () => {
   );
 };
 
+// eslint-disable-next-line react/prop-types
 export default function TopBar({ showNav, setShowNav }) {
   return (
     <div

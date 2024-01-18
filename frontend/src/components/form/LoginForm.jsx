@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from "react";
 import {
   Stack,
@@ -14,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import { fetchData } from "../../api";
+import axios from "../../api/axios";
 
 const LoginForm = () => {
   const [loading, setLoading] = React.useState(false);
@@ -29,29 +30,19 @@ const LoginForm = () => {
     };
 
     try {
-      const response = await fetchData("/auth/login", "POST", body);
-
-      if (!response.ok) {
-        toast({
-          title: "Sign-In Failed",
-          description: response.data.message,
-          status: "error",
-          isClosable: true,
-          duration: 2000,
-          onCloseComplete: () => {},
-        });
-      } else {
-        toast({
-          title: "Sign-In Success",
-          description: "We've logged you in.",
-          status: "success",
-          isClosable: true,
-          duration: 3000,
-          onCloseComplete: () => {
-            navigate("/dashboard", { replace: true });
-          },
-        });
-      }
+      // const response = await fetchData("/auth/login", "POST", body);
+      const response = await axios.post("/auth/login", body);
+      console.log(response.data);
+      toast({
+        title: "Sign-In Success",
+        description: "We've logged you in.",
+        status: "success",
+        isClosable: true,
+        duration: 3000,
+        onCloseComplete: () => {
+          navigate("/dashboard", { replace: true });
+        },
+      });
     } catch (err) {
       toast({
         title: "Sign-In Failed",
@@ -103,7 +94,7 @@ const LoginForm = () => {
       </Box>
       <Divider />
       <Text className="text-center">
-        Don't have an account?{" "}
+        Don't have an account?
         <ChakraLink color="teal.500" as={ReactRouterLink} to="/signup">
           register.
         </ChakraLink>
