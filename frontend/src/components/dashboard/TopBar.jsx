@@ -6,11 +6,22 @@ import {
   UserIcon,
 } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Menu, MenuButton, MenuList, Flex } from "@chakra-ui/react";
+import {
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  Flex,
+  useToast,
+} from "@chakra-ui/react";
 import axios from "../../api/axios";
 
 const MenuComponent = () => {
   const navigate = useNavigate();
+  const toast = useToast({
+    id: "#menu_component_toast",
+    duration: 2500,
+  });
   return (
     <>
       <div className="flex items-center pr-4 md:pr-16">
@@ -53,10 +64,18 @@ const MenuComponent = () => {
                 e.preventDefault();
                 const logout = async () => {
                   await axios.get("/auth/logout");
+
+                  toast({
+                    title: "You've logged out.",
+                    description: "You'll be redirected soon!",
+                    status: "success",
+                    onCloseComplete: () => {
+                      navigate("/", { replace: true });
+                    },
+                  });
                 };
 
                 logout();
-                navigate("/", { replace: true });
               }}
             >
               <UserIcon className="h-5 w-5" />

@@ -21,7 +21,9 @@ const LoginForm = () => {
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
 
-  const toast = useToast();
+  const toast = useToast({
+    id: "#loginform_toast",
+  });
 
   const handleSubmit = async (values) => {
     setLoading(true);
@@ -96,6 +98,7 @@ const LoginForm = () => {
       <Text className="text-center">
         Don't have an account?
         <ChakraLink color="teal.500" as={ReactRouterLink} to="/signup">
+          {" "}
           register.
         </ChakraLink>
       </Text>
