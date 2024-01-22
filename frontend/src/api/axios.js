@@ -1,7 +1,8 @@
 import _axios from "axios";
-
+const BASE_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 const axios = _axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

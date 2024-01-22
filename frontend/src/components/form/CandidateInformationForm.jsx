@@ -1,6 +1,5 @@
 import {
   Stack,
-  HStack,
   Heading,
   Button,
   Box,
@@ -9,10 +8,7 @@ import {
   FormHelperText,
   Input,
   Textarea,
-  IconButton,
 } from "@chakra-ui/react";
-import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
-import React from "react";
 
 const CandidateInformationForm = () => {
   const FormField1 = () => {
