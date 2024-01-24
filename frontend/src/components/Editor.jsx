@@ -15,17 +15,14 @@ import {
 } from "@chakra-ui/react";
 
 // TODO:
-export default function () {
+export default function Editor() {
   const [text, setText] = React.useState("");
   const { isOpen, onClose, onOpen } = useDisclosure();
   return (
     <>
       <Container>
-        <h1 className="text-3xl font-semibold py-4 text-center">
-          Quill React Editor
-        </h1>
-        <ReactQuillWrapper {...{ text, setText }} className="bg-slate-400" />
-        <div className="m-8">
+        <ReactQuillWrapper {...{ text, setText }} />
+        <div className="m-2">
           <Center>
             <Button onClick={onOpen}>Submit</Button>
           </Center>

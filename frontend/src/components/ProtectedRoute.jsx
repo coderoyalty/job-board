@@ -2,18 +2,25 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import React from "react";
+import React, { useState } from "react";
+import { Spinner } from "@chakra-ui/react";
+
 import axios from "../api/axios";
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const [loading, setLoading] = useState(false);
+
   React.useEffect(() => {
     const getCurrentUser = async () => {
+      setLoading(true);
       try {
         const res = await axios.get("/auth/me");
-        login(res.data.user);
+        console.log(res.data);
+        login(res.data);
+        setLoading(false);
       } catch (err) {
         navigate("/", {
           replace: true,
@@ -24,7 +31,17 @@ const ProtectedRoute = ({ children }) => {
     getCurrentUser();
   }, []);
 
-  return <>{children}</>;
+  return (
+    <>
+      {loading ? (
+        <div className="min-h-screen flex justify-center items-center">
+          <Spinner mt={4} color="blue.500" size={"xl"} />
+        </div>
+      ) : (
+        children
+      )}
+    </>
+  );
 };
 
 export default ProtectedRoute;
