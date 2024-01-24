@@ -8,68 +8,60 @@ import {
   FormHelperText,
   Input,
   Textarea,
+  Tag,
+  Flex,
 } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
 
 const CandidateInformationForm = () => {
-  const FormField1 = () => {
-    return (
-      <>
-        <FormControl isRequired>
-          <FormLabel>Location</FormLabel>
-          <Input type="text" name="location" id="location" />
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel htmlFor="resume">Resume</FormLabel>
-          <Input type="file" name="resume" id="resume" />
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel htmlFor="skills">Skills</FormLabel>
-          <Textarea resize={"none"} type="text" name="skills" id="skills" />
-          <FormHelperText>Use comma to seperate your skills.</FormHelperText>
-        </FormControl>
-      </>
-    );
+  const [content, setContent] = useState("");
+  const [skills, setSkills] = useState([]);
+  const debounceContent = useDebounce(content, 300);
+
+  const handleTextareaChange = (e) => {
+    e.preventDefault();
+    setContent(e.target.value);
   };
+
+  React.useEffect(() => {
+    if (debounceContent) {
+      let skills = debounceContent.split(/[,;\n]+/);
+      skills = skills.map((skill) => skill.trim()).filter(Boolean);
+      setSkills(skills);
+    }
+  }, [debounceContent]);
 
   return (
     <Stack direction="column" spacing={6} className="p-4">
-      <Heading textAlign="center">Additional Information</Heading>
+      <Heading textAlign="center">Candidate Information</Heading>
       <Box as="form">
         <Stack direction={"column"} spacing={4}>
-          {/* {!showAdditionalFields ? <FormField1 /> : <FormField2 />} */}
-
-          <FormField1 />
-
-          {/* <ButtonGroup> */}
-          {/* <HStack>
-            <IconButton
-              isDisabled={!showAdditionalFields}
-              icon={<ArrowLeftIcon />}
-              id="leftNavBtn"
-              w={"50%"}
-              variant={"outline"}
-              colorScheme="telegram"
-              onClick={() => {
-                setShow(false);
-              }}
+          <FormControl isRequired>
+            <FormLabel>Location</FormLabel>
+            <Input type="text" name="location" id="location" />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel htmlFor="skills">Skills</FormLabel>
+            <Textarea
+              resize={"none"}
+              type="text"
+              name="skills"
+              id="skills"
+              placeholder="React, Technical Writing, C++ etc."
+              value={content}
+              onChange={handleTextareaChange}
             />
-            <IconButton
-              isDisabled={showAdditionalFields}
-              icon={<ArrowRightIcon />}
-              id="rightNavBtn"
-              w={"50%"}
-              variant={"outline"}
-              colorScheme="telegram"
-              onClick={() => {
-                setShow(true);
-              }}
-            />
-          </HStack> */}
-          <Button
-            colorScheme="twitter"
-            type="submit"
-            // isDisabled={!showAdditionalFields}
-          >
+            <FormHelperText>Use comma to seperate your skills.</FormHelperText>
+            <Flex mt={4} gap={2} flexWrap={"wrap"} alignItems={"center"}>
+              {skills.map((tag, idx) => (
+                <Tag colorScheme="whatsapp" key={`${tag}-${idx}`} size={"md"}>
+                  {tag}
+                </Tag>
+              ))}
+            </Flex>
+          </FormControl>
+          <Button colorScheme="twitter" type="submit">
             Submit
           </Button>
         </Stack>

@@ -31,7 +31,7 @@ const EmployerInformationForm = () => {
           <FormLabel htmlFor="companyWebsite">Company Website</FormLabel>
           <Input type="url" name="companyWebsite" id="companyWebsite" />
           <FormHelperText>
-            Use the company LinkedIn URL if there's no website.
+            Use the company LinkedIn URL if there&apas;s no website.
           </FormHelperText>
         </FormControl>
       </>
@@ -55,7 +55,7 @@ const EmployerInformationForm = () => {
 
   return (
     <Stack direction="column" spacing={6} className="p-4">
-      <Heading textAlign="center">Additional Information</Heading>
+      <Heading textAlign="center">Employer Information</Heading>
       <Box as="form">
         <Stack direction={"column"} spacing={4}>
           {!showAdditionalFields ? <FormField1 /> : <FormField2 />}
