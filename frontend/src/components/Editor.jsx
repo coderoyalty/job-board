@@ -1,7 +1,7 @@
 import React from "react";
 import ReactQuillWrapper from "./ReactQuillWrapper";
 import {
-  Container,
+  Box,
   Modal,
   ModalBody,
   ModalOverlay,
@@ -20,14 +20,14 @@ export default function Editor() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   return (
     <>
-      <Container>
+      <Box>
         <ReactQuillWrapper {...{ text, setText }} />
         <div className="m-2">
           <Center>
             <Button onClick={onOpen}>Submit</Button>
           </Center>
         </div>
-      </Container>
+      </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

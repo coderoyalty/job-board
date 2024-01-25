@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import { HomeIcon, CreditCardIcon, UserIcon } from "@heroicons/react/24/solid";
 import { Avatar } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
@@ -12,7 +12,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
       {showNav && (
         <motion.div
           ref={ref}
-          className="fixed w-56 h-full bg-[#b2c061] shadow-sm"
+          className="fixed w-56 h-full bg-[#b2c061] shadow-sm z-[100]"
           initial={{ x: -56 }}
           animate={{ x: 0 }}
           exit={{ x: -56, transition: { delay: 0.2 } }}

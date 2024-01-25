@@ -92,7 +92,7 @@ const MenuComponent = () => {
 export default function TopBar({ showNav, setShowNav }) {
   return (
     <div
-      className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] bg-[#C08261] ${
+      className={`fixed top-0 left-0 z-[99] w-full h-16 flex justify-between items-center transition-all duration-[400ms] bg-[#C08261] ${
         showNav ? "pl-56" : ""
       }`}
     >
