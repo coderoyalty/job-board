@@ -1,8 +1,6 @@
 import {
   Bars3CenterLeftIcon,
-  PencilIcon,
   ChevronDownIcon,
-  CreditCardIcon,
   UserIcon,
 } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,6 +12,7 @@ import {
   Flex,
   useToast,
 } from "@chakra-ui/react";
+import { IoExitOutline } from "react-icons/io5";
 import axios from "../../api/axios";
 
 const MenuComponent = () => {
@@ -22,6 +21,25 @@ const MenuComponent = () => {
     id: "#menu_component_toast",
     duration: 2500,
   });
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    const logout = async () => {
+      await axios.get("/auth/logout");
+
+      toast({
+        title: "You've logged out.",
+        description: "You'll be redirected soon!",
+        status: "success",
+        onCloseComplete: () => {
+          navigate("/", { replace: true });
+        },
+      });
+    };
+
+    logout();
+  };
+
   return (
     <>
       <div className="flex items-center pr-4 md:pr-16">
@@ -36,50 +54,15 @@ const MenuComponent = () => {
             </Flex>
           </MenuButton>
           <MenuList>
-            <Link
-              href="#"
-              className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-            >
-              <PencilIcon className="h-4 w-4 mr-2" />
-              Edit
-            </Link>
-            <Link
-              href="#"
-              className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-            >
-              <CreditCardIcon className="h-4 w-4 mr-2" />
-              Billing
-            </Link>
-            <Link
-              href="#"
-              className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-            >
-              <UserIcon className="h-5 w-5" />
+            <Link className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center">
+              <UserIcon className="h-5 w-5 mr-1" />
               Account
             </Link>
             <Link
-              href="#"
               className="flex hover:bg-red-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-              onClick={(e) => {
-                e.preventDefault();
-                const logout = async () => {
-                  await axios.get("/auth/logout");
-
-                  toast({
-                    title: "You've logged out.",
-                    description: "You'll be redirected soon!",
-                    status: "success",
-                    onCloseComplete: () => {
-                      navigate("/", { replace: true });
-                    },
-                  });
-                };
-
-                logout();
-              }}
+              onClick={handleLogout}
             >
-              <UserIcon className="h-5 w-5" />
-              Logout
+              <IoExitOutline className="h-5 w-5 mr-1" /> Logout
             </Link>
           </MenuList>
         </Menu>
