@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { HomeIcon, CreditCardIcon, UserIcon } from "@heroicons/react/24/solid";
+import { HomeIcon } from "@heroicons/react/24/solid";
+import { MdOutlineCreate } from "react-icons/md";
+import { FaUserCircle } from "react-icons/fa";
 import { Avatar } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,7 +25,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
 
           <div className="flex flex-col font-semibold">
             <Link
-              to="/"
+              to="/dashboard"
               className={`pl-6 py-3 mx-5 text-xl rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
                 location.pathname === "/"
                   ? "bg-orange-100 text-orange-500"
@@ -38,22 +40,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
               </div>
             </Link>
             <Link
-              to="/account"
-              className={`pl-6 py-3 mx-5 text-xl  rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                location.pathname === "/account"
-                  ? "bg-orange-100 text-orange-500"
-                  : "text-cyan-700 hover:bg-orange-100 hover:text-orange-500"
-              }`}
-            >
-              <div className="mr-2">
-                <UserIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p>Account</p>
-              </div>
-            </Link>
-            <Link
-              to="/billing"
+              to="/profile"
               className={`pl-6 py-3 mx-5 text-xl  rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
                 location.pathname === "/billing"
                   ? "bg-orange-100 text-orange-500"
@@ -61,10 +48,25 @@ const SideBar = forwardRef(({ showNav }, ref) => {
               }`}
             >
               <div className="mr-2">
-                <CreditCardIcon className="h-5 w-5" />
+                <FaUserCircle className="h-5 w-5" />
               </div>
               <div>
-                <p>Billing</p>
+                <p>Profile</p>
+              </div>
+            </Link>
+            <Link
+              to="/dashboard/create"
+              className={`pl-6 py-3 mx-5 text-xl  rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+                location.pathname === "/account"
+                  ? "bg-orange-100 text-orange-500"
+                  : "text-cyan-700 hover:bg-orange-100 hover:text-orange-500"
+              }`}
+            >
+              <div className="mr-2">
+                <MdOutlineCreate className="h-5 w-5" />
+              </div>
+              <div>
+                <p>Create Job</p>
               </div>
             </Link>
           </div>
