@@ -3,13 +3,20 @@
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import React, { useState } from "react";
-import { Spinner } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 
 import axios from "../api/axios";
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const toast = useToast({
+    id: "protected_routes_toast",
+    duration: 3000,
+    status: "info",
+    title: "session status",
+    isClosable: true,
+  });
 
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +28,9 @@ const ProtectedRoute = ({ children }) => {
         login(res.data);
         setLoading(false);
       } catch (err) {
+        toast({
+          description: "The current session has expire",
+        });
         navigate("/", {
           replace: true,
         });
