@@ -14,8 +14,10 @@ import {
 } from "@chakra-ui/react";
 import { IoExitOutline } from "react-icons/io5";
 import axios from "../../api/axios";
+import useAuth from "../../hooks/useAuth";
 
 const MenuComponent = () => {
+  const { userData } = useAuth();
   const navigate = useNavigate();
   const toast = useToast({
     id: "#menu_component_toast",
@@ -40,6 +42,8 @@ const MenuComponent = () => {
     logout();
   };
 
+  console.log(userData["user"]);
+
   return (
     <>
       <div className="flex items-center pr-4 md:pr-16">
@@ -48,7 +52,7 @@ const MenuComponent = () => {
             <Flex align={"center"} gap={2}>
               <Avatar size={"sm"} name="John Doe" src="" />
               <span className="hidden md:block font-medium text-gray-700">
-                Akanni
+                {userData["user"] !== null ? userData.user.email : ""}
               </span>
               <ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
             </Flex>

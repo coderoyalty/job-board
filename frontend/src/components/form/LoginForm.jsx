@@ -32,9 +32,7 @@ const LoginForm = () => {
     };
 
     try {
-      // const response = await fetchData("/auth/login", "POST", body);
-      const response = await axios.post("/auth/login", body);
-      console.log(response.data);
+      await axios.post("/auth/login", body);
       toast({
         title: "Sign-In Success",
         description: "We've logged you in.",

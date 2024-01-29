@@ -18,7 +18,6 @@ const ProtectedRoute = ({ children }) => {
       setLoading(true);
       try {
         const res = await axios.get("/auth/me");
-        console.log(res.data);
         login(res.data);
         setLoading(false);
       } catch (err) {

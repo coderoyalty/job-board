@@ -27,7 +27,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
             <Link
               to="/dashboard"
               className={`pl-6 py-3 mx-5 text-xl rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                location.pathname === "/"
+                location.pathname === "/dashboard"
                   ? "bg-orange-100 text-orange-500"
                   : "text-cyan-700 hover:bg-orange-100 hover:text-orange-500"
               }`}
@@ -42,7 +42,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
             <Link
               to="/profile"
               className={`pl-6 py-3 mx-5 text-xl  rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                location.pathname === "/billing"
+                location.pathname === "/profile"
                   ? "bg-orange-100 text-orange-500"
                   : "text-cyan-700 hover:bg-orange-100 hover:text-orange-500"
               }`}
@@ -57,7 +57,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
             <Link
               to="/dashboard/create"
               className={`pl-6 py-3 mx-5 text-xl  rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                location.pathname === "/account"
+                location.pathname === "/dashboard/create"
                   ? "bg-orange-100 text-orange-500"
                   : "text-cyan-700 hover:bg-orange-100 hover:text-orange-500"
               }`}

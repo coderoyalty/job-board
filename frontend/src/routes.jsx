@@ -7,6 +7,7 @@ import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./components/Dashboard";
+import DashboardHome from "./components/dashboard/Home";
 
 const Router = () => {
   return (
@@ -27,6 +28,7 @@ const Router = () => {
             </ProtectedRoute>
           }
         >
+          <Route path="" element={<DashboardHome />} />
           <Route path="/dashboard/create" element={<Editor />} />
         </Route>
       </Routes>

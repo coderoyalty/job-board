@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }) {
         animate={{ paddingLeft: showNav && !isMobile ? "15rem" : 0 }}
         transition={{ duration: 0.15 }} // Animation duration
       >
-        <div className="px-4 md:px-16 py-4">{children}</div>
+        <div className="px-4 md:px-16 py-4 mt-2 max-md:px-8">{children}</div>
       </motion.main>
     </>
   );
