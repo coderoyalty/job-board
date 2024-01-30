@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import axios from "../api/axios";
+import axios from "../../api/axios";
 
 // eslint-disable-next-line react/prop-types
 function EditorForm({ description, resetDescription }) {

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import HomePage from "./pages/Home";
-import Editor from "./components/Editor";
+import Editor from "./components/editor/Editor";
 import JobPage from "./pages/JobPage";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
