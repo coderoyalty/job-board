@@ -87,7 +87,6 @@ const JobPage = () => {
     const fetchJobs = async () => {
       setLoading(true);
       const json = await axios.get(`/jobs?limit=${limit}&page=${page}&latest`);
-      console.log(json);
 
       const data = json.data;
       setJobs(data.data);
