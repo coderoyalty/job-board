@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -35,7 +34,6 @@ const ReactQuillWrapper = ({ text, setText }) => {
     "bullet",
     "indent",
     "link",
-    "image",
   ];
 
   const handleChange = (value) => {
@@ -43,9 +41,9 @@ const ReactQuillWrapper = ({ text, setText }) => {
   };
 
   return (
-    <div className="mx-auto w-[80%] max-w-2xl bg-slate-400 h-[498px] p-4 rounded-md">
+    <div className="mx-auto w-[100%] max-w-2xl h-[498px] p-4 bg-white rounded-md backdrop-blur-md">
       <ReactQuill
-        className="h-[400px]"
+        className="h-[400px] w-full"
         value={text}
         modules={modules}
         formats={formats}

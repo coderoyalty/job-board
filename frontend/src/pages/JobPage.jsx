@@ -2,8 +2,8 @@ import React from "react";
 import JobFilterForm from "../components/job/JobFilterForm";
 import JobCard from "../components/job/JobCard";
 import { useEffect } from "react";
-import { fetchData } from "../api";
 import { Spinner, Button, ButtonGroup } from "@chakra-ui/react";
+import axios from "../api/axios";
 
 const Pagination = ({ page, totalPages, onPageChange }) => {
   const [currentPage, setCurrentPage] = React.useState(page);
@@ -86,10 +86,7 @@ const JobPage = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
-      const json = await fetchData(
-        `/jobs?limit=${limit}&page=${page}&latest`,
-        "GET"
-      );
+      const json = await axios.get(`/jobs?limit=${limit}&page=${page}&latest`);
       console.log(json);
 
       const data = json.data;

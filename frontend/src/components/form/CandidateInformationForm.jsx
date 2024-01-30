@@ -1,6 +1,5 @@
 import {
   Stack,
-  HStack,
   Heading,
   Button,
   Box,
@@ -9,70 +8,126 @@ import {
   FormHelperText,
   Input,
   Textarea,
-  IconButton,
+  Tag,
+  Flex,
 } from "@chakra-ui/react";
-import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
-import React from "react";
+import React, { useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useFormik } from "formik";
+import { AxiosError } from "axios";
+import axios from "../../api/axios";
+import useAuth from "../../hooks/useAuth";
 
-const CandidateInformationForm = () => {
-  const FormField1 = () => {
-    return (
-      <>
-        <FormControl isRequired>
-          <FormLabel>Location</FormLabel>
-          <Input type="text" name="location" id="location" />
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel htmlFor="resume">Resume</FormLabel>
-          <Input type="file" name="resume" id="resume" />
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel htmlFor="skills">Skills</FormLabel>
-          <Textarea resize={"none"} type="text" name="skills" id="skills" />
-          <FormHelperText>Use comma to seperate your skills.</FormHelperText>
-        </FormControl>
-      </>
-    );
-  };
+const CandidateInformationForm = ({ onClose }) => {
+  const [isLoading, setLoading] = useState(false);
+  const { userData, login } = useAuth();
+  const [skills, setSkills] = useState([]);
+
+  const formik = useFormik({
+    initialValues: {
+      fullName: "",
+      location: "",
+      skills: "",
+    },
+    onSubmit: async (values) => {
+      setLoading(true);
+
+      let skills = values.skills.split(/[,;\n]+/);
+      skills = skills.map((skill) => skill.trim()).filter(Boolean);
+
+      const userId = userData.user.id;
+
+      try {
+        await axios.post(`/users/${userId}/role`, {
+          ...values,
+          skills,
+        });
+
+        onClose();
+        login(userData.data.data);
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          console.log(err.response);
+        }
+      }
+
+      formik.resetForm({
+        fullName: "",
+        location: "",
+        skills: "",
+      });
+      setLoading(false);
+    },
+  });
+  const debounceSkills = useDebounce(formik.values.skills, 300);
+
+  React.useEffect(() => {
+    if (debounceSkills) {
+      // split the skills using either ',' "\n", ";" as the splitter
+      let skills = debounceSkills.split(/[,;\n]+/);
+      // remove unnecessary whitespaces from the items
+      // then filter by removing empty items
+      skills = skills.map((skill) => skill.trim()).filter(Boolean);
+      // convert the filtered-data to a tag
+      setSkills(
+        skills.map((tag, idx) => (
+          <Tag colorScheme="whatsapp" key={`${tag}-${idx}`} size={"md"}>
+            {tag}
+          </Tag>
+        ))
+      );
+    } else {
+      // reset as empty
+      setSkills([]);
+    }
+  }, [debounceSkills]);
 
   return (
     <Stack direction="column" spacing={6} className="p-4">
-      <Heading textAlign="center">Additional Information</Heading>
-      <Box as="form">
+      <Heading textAlign="center">Candidate Information</Heading>
+      <Box as="form" onSubmit={formik.handleSubmit}>
         <Stack direction={"column"} spacing={4}>
-          {/* {!showAdditionalFields ? <FormField1 /> : <FormField2 />} */}
-
-          <FormField1 />
-
-          {/* <ButtonGroup> */}
-          {/* <HStack>
-            <IconButton
-              isDisabled={!showAdditionalFields}
-              icon={<ArrowLeftIcon />}
-              id="leftNavBtn"
-              w={"50%"}
-              variant={"outline"}
-              colorScheme="telegram"
-              onClick={() => {
-                setShow(false);
-              }}
+          <FormControl isRequired>
+            <FormLabel>Full Name</FormLabel>
+            <Input
+              type="text"
+              name="fullName"
+              id="fullName"
+              onChange={formik.handleChange}
+              value={formik.values.fullName}
             />
-            <IconButton
-              isDisabled={showAdditionalFields}
-              icon={<ArrowRightIcon />}
-              id="rightNavBtn"
-              w={"50%"}
-              variant={"outline"}
-              colorScheme="telegram"
-              onClick={() => {
-                setShow(true);
-              }}
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Location</FormLabel>
+            <Input
+              type="text"
+              name="location"
+              id="location"
+              onChange={formik.handleChange}
+              value={formik.values.location}
             />
-          </HStack> */}
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel htmlFor="skills">Skills</FormLabel>
+            <Textarea
+              resize={"none"}
+              type="text"
+              name="skills"
+              id="skills"
+              placeholder="React, Technical Writing, C++ etc."
+              value={formik.values.skills}
+              onChange={formik.handleChange}
+            />
+            <FormHelperText>Use comma to seperate your skills.</FormHelperText>
+            <Flex mt={4} gap={2} flexWrap={"wrap"} alignItems={"center"}>
+              {skills.map((skill) => skill)}
+            </Flex>
+          </FormControl>
           <Button
             colorScheme="twitter"
             type="submit"
-            // isDisabled={!showAdditionalFields}
+            isLoading={isLoading}
+            isDisabled={isLoading}
           >
             Submit
           </Button>

@@ -1,7 +1,7 @@
 import React from "react";
-import ReactQuillWrapper from "./ReactQuillWrapper";
+import ReactQuillWrapper from "../ReactQuillWrapper";
 import {
-  Container,
+  Box,
   Modal,
   ModalBody,
   ModalOverlay,
@@ -14,37 +14,37 @@ import {
   Center,
 } from "@chakra-ui/react";
 
-// TODO:
-export default function () {
+import EditorForm from "./EditorForm";
+
+export default function Editor() {
   const [text, setText] = React.useState("");
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const resetDescription = () => {
+    setText("");
+  };
   return (
     <>
-      <Container>
-        <h1 className="text-3xl font-semibold py-4 text-center">
-          Quill React Editor
-        </h1>
-        <ReactQuillWrapper {...{ text, setText }} className="bg-slate-400" />
-        <div className="m-8">
+      <Box>
+        <ReactQuillWrapper {...{ text, setText }} />
+        <div className="m-2">
           <Center>
             <Button onClick={onOpen}>Submit</Button>
           </Center>
         </div>
-      </Container>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      </Box>
+      <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Modal Title</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <div dangerouslySetInnerHTML={{ __html: text }}></div>
+            <EditorForm
+              description={text}
+              resetDescription={resetDescription}
+            />
           </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
+          <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
     </>
