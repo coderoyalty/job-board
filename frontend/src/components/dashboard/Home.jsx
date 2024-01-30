@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
-import { MdOutlineLocationOn } from "react-icons/md";
+import { MdOutlineLocationOn, MdOutlineBusiness } from "react-icons/md";
 import { Tag } from "@chakra-ui/react";
 
 function CandidateHomeComponent({ roleData }) {
@@ -10,7 +10,7 @@ function CandidateHomeComponent({ roleData }) {
       <div>
         <h1 className="text-3xl font-medium">{roleData.fullName}</h1>
         <div className="flex gap-1 items-center font-semibold">
-          <MdOutlineLocationOn /> {roleData.location}{" "}
+          <MdOutlineLocationOn /> {roleData.location}
         </div>
         <Tag colorScheme="twitter" size={"sm"} className="mt-1 ml-2">
           Applicant Account
@@ -30,8 +30,28 @@ function CandidateHomeComponent({ roleData }) {
   );
 }
 
-function EmployerHomeComponent() {
-  return <></>;
+function EmployerHomeComponent({ roleData }) {
+  return (
+    <>
+      <div className="grid grid-cols-2 max-sm:grid-cols-1">
+        <div className="bg-white p-2 rounded-lg">
+          <h1 className="text-3xl font-medium">{roleData.contactName}</h1>
+          <div className="flex gap-1 items-center font-semibold">
+            <MdOutlineBusiness /> {roleData.companyName}
+          </div>
+          <div className="flex gap-1 items-center font-semibold">
+            <MdOutlineLocationOn /> {roleData.companyLocation}
+          </div>
+          <Tag colorScheme="whatsapp" size={"sm"} className="mt-1 ml-2">
+            Employer Account
+          </Tag>
+          <div className="mt-4">
+            <p>{roleData.companyDescription}</p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 function DashboardHome() {
@@ -53,7 +73,7 @@ function DashboardHome() {
       {user.role === "candidate" ? (
         <CandidateHomeComponent roleData={roleData} />
       ) : (
-        <EmployerHomeComponent />
+        <EmployerHomeComponent roleData={roleData} />
       )}
     </>
   );

@@ -38,7 +38,7 @@ const LoginForm = () => {
         description: "We've logged you in.",
         status: "success",
         isClosable: true,
-        duration: 3000,
+        duration: 1000,
         onCloseComplete: () => {
           navigate("/dashboard", { replace: true });
         },
