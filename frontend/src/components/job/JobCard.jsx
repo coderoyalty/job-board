@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const data = {
   jobTitle: "Office Administrator",
   created: new Date(),
@@ -57,8 +58,8 @@ function findTimeLeft(start, end) {
 const JobCard = ({ data }) => {
   return (
     <>
-      <div className="transition-all mx-2 w-[324px] sm:w-[424px] md:max-w-[482px] bg-[#E2C799] shadow-md rounded overflow-hidden">
-        <Link>
+      <div className="transition-all delay-75 mx-2 w-[324px] sm:w-[424px] md:max-w-[482px] bg-[#E2C799] shadow-md rounded overflow-hidden hover:backdrop:blur-lg hover:bg-[rgba(255,255,255,0.45)]">
+        <Link to={`/job/${data.id}`}>
           <Stack direction={"column"} spacing={1} className="p-2 md:p-4">
             {/* Job Info */}
             <div className="flex justify-between">
