@@ -30,7 +30,7 @@ function Preview() {
 
   return (
     <>
-      <div className="mx-auto w-[90%] bg-white mt-2 px-8 py-4 rounded shadow">
+      <div className="joblisting-preview mx-auto w-[90%] bg-white mt-2 px-8 py-4 rounded shadow">
         <div className="mb-4">
           <h1 className="text-xl font-semibold">Job Title: {data?.title}</h1>
           <span className="flex items-center font-medium">

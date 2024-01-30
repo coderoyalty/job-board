@@ -10,3 +10,8 @@ ul li {
 ol li {
   list-style: decimal;
 }
+
+.joblisting-preview a {
+  color: blue !important;
+  text-decoration: underline !important;
+}
