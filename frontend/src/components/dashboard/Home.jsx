@@ -64,7 +64,6 @@ function DashboardHome() {
     if (userData) {
       setUser(userData.user);
       setRoleData(userData[userData.user.role]);
-      console.log(userData);
     }
   }, [userData]);
 

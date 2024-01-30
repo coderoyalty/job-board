@@ -47,7 +47,7 @@ const CandidateInformationForm = ({ onClose }) => {
         login(userData.data.data);
       } catch (err) {
         if (err instanceof AxiosError) {
-          console.log(err.response);
+          //TODO: if 401; save the form data in localStorage, then navigate home
         }
       }
 

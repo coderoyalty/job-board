@@ -1,0 +1,17 @@
+ul > * {
+  margin-left: 16px;
+}
+
+ul li {
+  list-style: disc;
+  margin-bottom: 2px;
+}
+
+ol li {
+  list-style: decimal;
+}
+
+.joblisting-preview a {
+  color: blue !important;
+  text-decoration: underline !important;
+}
