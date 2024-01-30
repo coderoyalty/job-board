@@ -8,13 +8,9 @@ const JobValidator = z.object({
 		.refine(data => data.trim().length > 0, {
 			message: "title cannot be empty or contain only whitespace",
 		}),
-	description: z
-		.string()
-		.min(10)
-		.max(256)
-		.refine(data => data.trim().length > 0, {
-			message: "description cannot be empty or contain only whitespace",
-		}),
+	description: z.string().refine(data => data.trim().length > 0, {
+		message: "description cannot be empty or contain only whitespace",
+	}),
 	company: z
 		.string()
 		.max(128)
@@ -42,8 +38,6 @@ const JobUpdateValidator = z.object({
 		.optional(),
 	description: z
 		.string()
-		.min(10)
-		.max(256)
 		.refine(data => data.trim().length > 0, {
 			message: "description cannot be empty or contain only whitespace",
 		})
